@@ -226,7 +226,7 @@
       }
 
       body.scrolled-mobile canvas {
-        width: min(100%, 220px);
+        width: min(100%, 320px);
       }
 
       #controls {
@@ -254,7 +254,7 @@
       }
 
       body.scrolled-mobile .mobile-preview-actions {
-        width: min(100%, 220px);
+        width: min(100%, 320px);
         margin-top: 8px;
       }
 
@@ -265,6 +265,26 @@
       .mobile-preview-actions button {
         min-height: 42px;
         font-size: 15px;
+      }
+
+
+      #controls {
+        touch-action: pan-y;
+      }
+
+      label {
+        margin-top: 14px;
+      }
+
+      input[type="range"] {
+        margin-top: 6px;
+        margin-bottom: 12px;
+        min-height: 36px;
+        touch-action: pan-y;
+      }
+
+      body.is-scrolling-slider input[type="range"] {
+        pointer-events: none;
       }
 
       .preset-grid {
@@ -1314,6 +1334,46 @@ function drawPetals(ctx, settings, width, height) {
 
     document.getElementById("downloadPng").addEventListener("click", exportPNG);
     document.getElementById("downloadPngTop").addEventListener("click", exportPNG);
+
+
+    let sliderTouch = null;
+
+    document.addEventListener("touchstart", (e) => {
+      if (window.innerWidth > 900) return;
+      const target = e.target;
+      if (!(target instanceof HTMLInputElement) || target.type !== "range") return;
+
+      const touch = e.touches[0];
+      sliderTouch = {
+        target,
+        startX: touch.clientX,
+        startY: touch.clientY,
+        locked: false
+      };
+    }, { passive: true });
+
+    document.addEventListener("touchmove", (e) => {
+      if (!sliderTouch || window.innerWidth > 900) return;
+
+      const touch = e.touches[0];
+      const dx = Math.abs(touch.clientX - sliderTouch.startX);
+      const dy = Math.abs(touch.clientY - sliderTouch.startY);
+
+      if (!sliderTouch.locked && dy > 10 && dy > dx) {
+        sliderTouch.locked = true;
+        document.body.classList.add("is-scrolling-slider");
+      }
+    }, { passive: true });
+
+    document.addEventListener("touchend", () => {
+      sliderTouch = null;
+      document.body.classList.remove("is-scrolling-slider");
+    }, { passive: true });
+
+    document.addEventListener("touchcancel", () => {
+      sliderTouch = null;
+      document.body.classList.remove("is-scrolling-slider");
+    }, { passive: true });
 
     function updateMobileScrollState() {
       if (window.innerWidth <= 900 && window.scrollY > 110) {
