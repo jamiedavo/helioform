@@ -657,14 +657,12 @@
         lockGolden: true,
         framing: 0.78,
         radiusPower: 0.50,
+        seedProfile: "natural",
         size: 2.4,
         sizeCurve: 0.55,
         shape: "ellipse",
-        seedProfile: "outerFlare",
-        seedProfile: "natural",
         stretch: 1.45,
         showPetals: true,
-        petalType: "needle",
         petalType: "classic",
         petalCount: 34,
         petalLength: 90,
@@ -687,18 +685,12 @@
         lockGolden: true,
         framing: 0.90,
         radiusPower: 0.50,
+        seedProfile: "outerFlare",
         size: 2.0,
         sizeCurve: 1.10,
         shape: "circle",
-        seedProfile: "natural",
-        seedProfile: "even",
-        seedProfile: "even",
-        seedProfile: "outerFlare",
         stretch: 1.4,
         showPetals: false,
-        petalType: "stub",
-        petalType: "classic",
-        petalType: "rounded",
         petalType: "classic",
         petalCount: 34,
         petalLength: 90,
@@ -721,11 +713,13 @@
         lockGolden: true,
         framing: 0.78,
         radiusPower: 0.50,
+        seedProfile: "even",
         size: 4.6,
         sizeCurve: 0.35,
         shape: "circle",
         stretch: 1.4,
         showPetals: false,
+        petalType: "classic",
         petalCount: 34,
         petalLength: 90,
         petalWidth: 26,
@@ -747,11 +741,13 @@
         lockGolden: true,
         framing: 0.82,
         radiusPower: 0.50,
+        seedProfile: "even",
         size: 2.2,
         sizeCurve: 0.0,
         shape: "circle",
         stretch: 1.0,
         showPetals: false,
+        petalType: "classic",
         petalCount: 34,
         petalLength: 90,
         petalWidth: 26,
@@ -773,11 +769,13 @@
         lockGolden: true,
         framing: 0.84,
         radiusPower: 0.50,
+        seedProfile: "outerFlare",
         size: 2.7,
         sizeCurve: 0.75,
         shape: "ellipse",
         stretch: 1.55,
         showPetals: true,
+        petalType: "rounded",
         petalCount: 34,
         petalLength: 100,
         petalWidth: 28,
@@ -799,11 +797,13 @@
         lockGolden: true,
         framing: 0.84,
         radiusPower: 0.50,
+        seedProfile: "natural",
         size: 2.3,
         sizeCurve: 0.55,
         shape: "circle",
         stretch: 1.0,
         showPetals: false,
+        petalType: "classic",
         petalCount: 34,
         petalLength: 90,
         petalWidth: 26,
@@ -930,23 +930,30 @@
     }
 
 
-    const seedProfileMap = {
-      natural: 0.55,
-      even: 0.05,
-      denseCore: -1.0,
-      outerFlare: 1.35
-    };
-
-    function syncSeedProfileFromSizeCurve() {
-      const current = parseFloat(controls.sizeCurve.value);
-      const entries = Object.entries(seedProfileMap);
-      const match = entries.find(([, value]) => Math.abs(current - value) < 0.001);
-      controls.seedProfile.value = match ? match[0] : "custom";
+    function applySeedProfile(profile) {
+      const profileMap = {
+        natural: 0.55,
+        even: 0.00,
+        denseCore: -0.85,
+        outerFlare: 1.10,
+        custom: parseFloat(controls.sizeCurve.value)
+      };
+      if (profile !== "custom") {
+        controls.sizeCurve.value = profileMap[profile].toFixed(2);
+      }
     }
 
-    function applySeedProfile(profile) {
-      if (!(profile in seedProfileMap)) return;
-      controls.sizeCurve.value = seedProfileMap[profile];
+    function inferSeedProfileFromSizeCurve(value) {
+      const profiles = [
+        ["natural", 0.55],
+        ["even", 0.00],
+        ["denseCore", -0.85],
+        ["outerFlare", 1.10]
+      ];
+      for (const [name, target] of profiles) {
+        if (Math.abs(value - target) < 0.03) return name;
+      }
+      return "custom";
     }
 
     function updateLabels() {
@@ -971,7 +978,12 @@
       valueLabels.contrast.textContent = s.contrast.toFixed(2);
 
       controls.angle.disabled = s.lockGolden;
-      syncSeedProfileFromSizeCurve();
+      if (document.activeElement !== controls.seedProfile) {
+        const inferred = inferSeedProfileFromSizeCurve(s.sizeCurve);
+        if (controls.seedProfile.value !== "custom" || inferred !== "custom") {
+          controls.seedProfile.value = inferred;
+        }
+      }
     }
 
     function resizeCanvas() {
@@ -1052,65 +1064,48 @@
     }
 
     function drawPetalPath(ctx, type, length, width) {
-      const halfLength = length / 2;
-      const halfWidth = width / 2;
+      const halfL = length / 2;
+      const halfW = width / 2;
 
       ctx.beginPath();
-      ctx.moveTo(0, -halfLength);
 
-      switch (type) {
-        case "needle":
-          ctx.bezierCurveTo(
-            halfWidth * 0.22, -length * 0.32,
-            halfWidth * 0.12, length * 0.08,
-            0, halfLength
-          );
-          ctx.bezierCurveTo(
-            -halfWidth * 0.12, length * 0.08,
-            -halfWidth * 0.22, -length * 0.32,
-            0, -halfLength
-          );
-          break;
-        case "rounded":
-          ctx.bezierCurveTo(
-            halfWidth * 1.18, -length * 0.08,
-            halfWidth * 1.05, length * 0.34,
-            0, halfLength
-          );
-          ctx.bezierCurveTo(
-            -halfWidth * 1.05, length * 0.34,
-            -halfWidth * 1.18, -length * 0.08,
-            0, -halfLength
-          );
-          break;
-        case "stub":
-          ctx.bezierCurveTo(
-            halfWidth * 1.28, -length * 0.02,
-            halfWidth * 0.82, length * 0.22,
-            0, halfLength * 0.72
-          );
-          ctx.bezierCurveTo(
-            -halfWidth * 0.82, length * 0.22,
-            -halfWidth * 1.28, -length * 0.02,
-            0, -halfLength
-          );
-          break;
-        case "classic":
-        default:
-          ctx.bezierCurveTo(
-            halfWidth, -length / 4,
-            halfWidth, length / 4,
-            0, halfLength
-          );
-          ctx.bezierCurveTo(
-            -halfWidth, length / 4,
-            -halfWidth, -length / 4,
-            0, -halfLength
-          );
-          break;
+      if (type === "needle") {
+        ctx.moveTo(0, -halfL);
+        ctx.bezierCurveTo(width * 0.12, -length * 0.35, width * 0.18, length * 0.22, 0, halfL);
+        ctx.bezierCurveTo(-width * 0.18, length * 0.22, -width * 0.12, -length * 0.35, 0, -halfL);
+      } else if (type === "rounded") {
+        ctx.moveTo(0, -halfL);
+        ctx.bezierCurveTo(width * 0.9, -length * 0.2, width * 0.92, length * 0.18, 0, halfL);
+        ctx.bezierCurveTo(-width * 0.92, length * 0.18, -width * 0.9, -length * 0.2, 0, -halfL);
+      } else if (type === "stub") {
+        const stubL = length * 0.62;
+        const stubHalfL = stubL / 2;
+        ctx.moveTo(0, -stubHalfL);
+        ctx.bezierCurveTo(width * 0.95, -stubL * 0.18, width * 0.85, stubL * 0.2, 0, stubHalfL);
+        ctx.bezierCurveTo(-width * 0.85, stubL * 0.2, -width * 0.95, -stubL * 0.18, 0, -stubHalfL);
+      } else {
+        ctx.moveTo(0, -halfL);
+        ctx.bezierCurveTo(width * 0.5, -length * 0.25, width * 0.5, length * 0.25, 0, halfL);
+        ctx.bezierCurveTo(-width * 0.5, length * 0.25, -width * 0.5, -length * 0.25, 0, -halfL);
       }
 
       ctx.closePath();
+    }
+
+    function getPetalDimensions(type, length, width, isBackRing = false) {
+      let l = length;
+      let w = width;
+      if (type === "needle") {
+        l *= isBackRing ? 1.18 : 1.3;
+        w *= isBackRing ? 0.58 : 0.48;
+      } else if (type === "rounded") {
+        l *= isBackRing ? 0.96 : 0.92;
+        w *= isBackRing ? 1.22 : 1.35;
+      } else if (type === "stub") {
+        l *= isBackRing ? 0.7 : 0.62;
+        w *= isBackRing ? 1.4 : 1.55;
+      }
+      return { length: l, width: w };
     }
 
     function drawPetalRing(ctx, options) {
@@ -1124,45 +1119,28 @@
         opacity,
         rotationOffset = 0,
         colors,
-        petalType = "classic"
+        petalType = "classic",
+        isBackRing = false
       } = options;
+
+      const dims = getPetalDimensions(petalType, length, width, isBackRing);
 
       for (let i = 0; i < count; i++) {
         const theta = ((i + rotationOffset) / count) * Math.PI * 2;
         const x = cx + baseRadius * Math.cos(theta);
         const y = cy + baseRadius * Math.sin(theta);
 
-        let drawLength = length;
-        let drawWidth = width;
-
-        switch (petalType) {
-          case "needle":
-            drawLength = length * 1.16;
-            drawWidth = width * 0.52;
-            break;
-          case "rounded":
-            drawLength = length * 0.9;
-            drawWidth = width * 1.22;
-            break;
-          case "stub":
-            drawLength = length * 0.66;
-            drawWidth = width * 1.3;
-            break;
-          default:
-            break;
-        }
-
         ctx.save();
         ctx.translate(x, y);
         ctx.rotate(theta + Math.PI / 2);
 
-        const grad = ctx.createLinearGradient(0, -drawLength * 0.5, 0, drawLength * 0.5);
+        const grad = ctx.createLinearGradient(0, -dims.length * 0.5, 0, dims.length * 0.5);
         grad.addColorStop(0, `rgba(${colors[0][0]}, ${colors[0][1]}, ${colors[0][2]}, ${opacity})`);
         grad.addColorStop(0.55, `rgba(${colors[1][0]}, ${colors[1][1]}, ${colors[1][2]}, ${opacity})`);
         grad.addColorStop(1, `rgba(${colors[2][0]}, ${colors[2][1]}, ${colors[2][2]}, ${opacity * 0.92})`);
 
         ctx.fillStyle = grad;
-        drawPetalPath(ctx, petalType, drawLength, drawWidth);
+        drawPetalPath(ctx, petalType, dims.length, dims.width);
         ctx.fill();
 
         ctx.restore();
@@ -1206,7 +1184,8 @@ function drawPetals(ctx, settings, width, height) {
         backMid,
         backBase
       ],
-      petalType: settings.petalType
+      petalType: settings.petalType,
+      isBackRing: true
     });
   }
 
@@ -1225,7 +1204,8 @@ function drawPetals(ctx, settings, width, height) {
         [frontMid.r, frontMid.g, frontMid.b],
         [frontBase.r, frontBase.g, frontBase.b]
       ],
-      petalType: settings.petalType
+      petalType: settings.petalType,
+      isBackRing: false
     });
   }
 }
@@ -1428,9 +1408,9 @@ function drawPetals(ctx, settings, width, height) {
       controls.lockGolden.checked = preset.lockGolden;
       controls.framing.value = preset.framing;
       controls.radiusPower.value = preset.radiusPower;
+      controls.seedProfile.value = preset.seedProfile || inferSeedProfileFromSizeCurve(preset.sizeCurve);
       controls.size.value = preset.size;
       controls.sizeCurve.value = preset.sizeCurve;
-      controls.seedProfile.value = preset.seedProfile || "custom";
       controls.shape.value = preset.shape;
       controls.stretch.value = preset.stretch;
       controls.showPetals.checked = preset.showPetals;
@@ -1458,14 +1438,16 @@ function drawPetals(ctx, settings, width, height) {
       control.addEventListener("change", drawPreview);
     });
 
-
     controls.seedProfile.addEventListener("change", () => {
       applySeedProfile(controls.seedProfile.value);
       drawPreview();
     });
 
     controls.sizeCurve.addEventListener("input", () => {
-      syncSeedProfileFromSizeCurve();
+      controls.seedProfile.value = inferSeedProfileFromSizeCurve(parseFloat(controls.sizeCurve.value));
+    });
+    controls.sizeCurve.addEventListener("change", () => {
+      controls.seedProfile.value = inferSeedProfileFromSizeCurve(parseFloat(controls.sizeCurve.value));
     });
 
     document.querySelectorAll("[data-preset]").forEach((button) => {
