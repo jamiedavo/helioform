@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Helioform</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div class="preview-panel">
+    <div class="preview-stage">
+      <canvas id="canvas"></canvas>
+    </div>
+
+    <div class="mobile-preview-actions">
+      <div class="row">
+        <button type="button" id="downloadPngTop">Download PNG</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="controls">
+    <h1>Sunflower Generator Pro</h1>
+    <div class="sub">
+      Phyllotaxis-based radial pattern generator with dual petal rings,
+      framed composition, HD export, and mobile-friendly controls.
+    </div>
+
+    <div class="group">
+      <h3>Presets</h3>
+      <div class="preset-grid">
+        <button type="button" data-preset="sunflower">Sunflower</button>
+        <button type="button" data-preset="dense">Dense Core</button>
+        <button type="button" data-preset="minimal">Minimal</button>
+        <button type="button" data-preset="study">Golden Study</button>
+        <button type="button" data-preset="amber">Burnt Amber</button>
+        <button type="button" data-preset="mono">Monochrome</button>
+      </div>
+    </div>
+
+    <div class="group">
+      <h3>Structure</h3>
+
+      <label>
+        Points
+        <span class="value" id="pointsVal">1800</span>
+      </label>
+      <input type="range" id="points" min="100" max="8000" step="50" value="1800" />
+
+      <label>
+        Angle (°)
+        <span class="value" id="angleVal">137.5</span>
+      </label>
+      <input type="range" id="angle" min="130" max="145" step="0.1" value="137.5" />
+
+      <label class="checkbox">
+        <input type="checkbox" id="lockGolden" checked />
+        Lock true golden angle
+      </label>
+
+      <label>
+        Framing
+        <span class="value" id="framingVal">0.78</span>
+      </label>
+      <input type="range" id="framing" min="0.55" max="0.95" step="0.01" value="0.78" />
+
+      <label>
+        Radius Curve
+        <span class="value" id="radiusPowerVal">0.50</span>
+      </label>
+      <input type="range" id="radiusPower" min="0.35" max="0.75" step="0.01" value="0.50" />
+
+      <div class="tiny">
+        Radius curve changes how tightly points accumulate toward the centre.
+        0.50 is the classic square-root phyllotaxis.
+      </div>
+    </div>
+
+    <div class="group">
+      <h3>Seeds</h3>
+
+      <label>
+        Seed Profile
+      </label>
+      <select id="seedProfile">
+        <option value="natural" selected>Natural</option>
+        <option value="even">Even</option>
+        <option value="denseCore">Dense Core</option>
+        <option value="outerFlare">Outer Flare</option>
+        <option value="custom">Custom</option>
+      </select>
+
+      <label>
+        Base Size
+        <span class="value" id="sizeVal">2.4</span>
+      </label>
+      <input type="range" id="size" min="0.5" max="12" step="0.1" value="2.4" />
+
+      <label>
+        Size Falloff
+        <span class="value" id="sizeCurveVal">0.55</span>
+      </label>
+      <input type="range" id="sizeCurve" min="-1.5" max="1.5" step="0.05" value="0.55" />
+
+      <label>
+        Seed Shape
+      </label>
+      <select id="shape">
+        <option value="circle">Circle</option>
+        <option value="square">Square</option>
+        <option value="ellipse" selected>Ellipse</option>
+      </select>
+
+      <label>
+        Ellipse Stretch
+        <span class="value" id="stretchVal">1.45</span>
+      </label>
+      <input type="range" id="stretch" min="1" max="3" step="0.05" value="1.45" />
+    </div>
+
+    <div class="group">
+      <h3>Front Petal Ring</h3>
+
+      <label class="checkbox">
+        <input type="checkbox" id="showPetals" checked />
+        Show front petal ring
+      </label>
+
+      <label>
+        Petal Type
+      </label>
+      <select id="petalType">
+        <option value="classic" selected>Classic</option>
+        <option value="needle">Needle</option>
+        <option value="rounded">Rounded</option>
+        <option value="stub">Stub</option>
+      </select>
+
+      <label>
+        Petal Count
+        <span class="value" id="petalCountVal">34</span>
+      </label>
+      <input type="range" id="petalCount" min="12" max="80" step="1" value="34" />
+
+      <label>
+        Petal Length
+        <span class="value" id="petalLengthVal">90</span>
+      </label>
+      <input type="range" id="petalLength" min="20" max="220" step="1" value="90" />
+
+      <label>
+        Petal Width
+        <span class="value" id="petalWidthVal">26</span>
+      </label>
+      <input type="range" id="petalWidth" min="6" max="80" step="1" value="26" />
+
+      <label>
+        Petal Offset
+        <span class="value" id="petalOffsetVal">10</span>
+      </label>
+      <input type="range" id="petalOffset" min="-20" max="60" step="1" value="10" />
+
+      <label>
+        Petal Opacity
+        <span class="value" id="petalOpacityVal">0.95</span>
+      </label>
+      <input type="range" id="petalOpacity" min="0.1" max="1" step="0.05" value="0.95" />
+    </div>
+
+    <div class="group">
+      <h3>Back Petal Ring</h3>
+
+      <label class="checkbox">
+        <input type="checkbox" id="showBackPetals" checked />
+        Show back petal ring
+      </label>
+
+      <label>
+        Back Petal Length
+        <span class="value" id="backPetalLengthVal">120</span>
+      </label>
+      <input type="range" id="backPetalLength" min="20" max="260" step="1" value="120" />
+
+      <label>
+        Back Petal Width
+        <span class="value" id="backPetalWidthVal">32</span>
+      </label>
+      <input type="range" id="backPetalWidth" min="6" max="100" step="1" value="32" />
+
+      <label>
+        Back Petal Offset
+        <span class="value" id="backPetalOffsetVal">24</span>
+      </label>
+      <input type="range" id="backPetalOffset" min="-20" max="80" step="1" value="24" />
+
+      <label>
+        Back Petal Opacity
+        <span class="value" id="backPetalOpacityVal">0.72</span>
+      </label>
+      <input type="range" id="backPetalOpacity" min="0.1" max="1" step="0.05" value="0.72" />
+
+      <label>
+        Back Ring Rotation
+        <span class="value" id="backPetalRotationVal">0.50</span>
+      </label>
+      <input type="range" id="backPetalRotation" min="0" max="1" step="0.05" value="0.50" />
+
+      <div class="tiny">
+        Back ring uses the same petal count as the front ring for mathematical consistency.
+        Rotation offsets it between the front petals.
+      </div>
+    </div>
+
+    <div class="group">
+      <h3>Colour</h3>
+
+      <label>
+        Palette
+      </label>
+      <select id="palette">
+        <option value="amber">Burnt Amber</option>
+        <option value="sunflower" selected>Sunflower</option>
+        <option value="charcoal">Charcoal</option>
+        <option value="bone">Bone</option>
+        <option value="copper">Copper</option>
+        <option value="mono">Monochrome</option>
+      </select>
+
+      <label>
+        Background
+      </label>
+      <select id="background">
+        <option value="black" selected>Black</option>
+        <option value="charcoal">Dark Charcoal</option>
+        <option value="paper">Warm Paper</option>
+        <option value="transparent">Transparent</option>
+      </select>
+
+      <label>
+        Contrast
+        <span class="value" id="contrastVal">1.00</span>
+      </label>
+      <input type="range" id="contrast" min="0.5" max="1.8" step="0.05" value="1.00" />
+    </div>
+
+    <div class="group">
+      <h3>Export</h3>
+
+      <label>
+        PNG Size
+      </label>
+      <select id="exportSize">
+        <option value="screen">Screen size</option>
+        <option value="2000">2000 px</option>
+        <option value="3000">3000 px</option>
+        <option value="4000" selected>4000 px</option>
+        <option value="6000">6000 px</option>
+      </select>
+
+      <div class="row" style="margin-top: 12px;">
+        <button type="button" id="downloadPng">Download PNG</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
