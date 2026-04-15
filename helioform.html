@@ -1,0 +1,1133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Sunflower Generator Pro</title>
+  <style>
+    :root {
+      --panel-w: 340px;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html,
+    body {
+      margin: 0;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background: #000;
+      color: #fff;
+      font-family: Arial, sans-serif;
+    }
+
+    body {
+      display: flex;
+    }
+
+    #controls {
+      width: var(--panel-w);
+      height: 100vh;
+      padding: 20px;
+      background: #111;
+      border-right: 1px solid #333;
+      overflow-y: auto;
+      overflow-x: hidden;
+      flex: 0 0 var(--panel-w);
+    }
+
+    h1 {
+      margin: 0 0 8px 0;
+      font-size: 22px;
+    }
+
+    .sub {
+      font-size: 13px;
+      color: #bbb;
+      margin-bottom: 18px;
+      line-height: 1.4;
+    }
+
+    .group {
+      margin-bottom: 18px;
+      padding-bottom: 16px;
+      border-bottom: 1px solid #222;
+    }
+
+    .group:last-child {
+      border-bottom: none;
+    }
+
+    h3 {
+      margin: 0 0 10px 0;
+      font-size: 14px;
+      color: #ddd;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+
+    label {
+      display: block;
+      margin-top: 12px;
+      font-size: 13px;
+    }
+
+    .row {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+    }
+
+    .row > * {
+      flex: 1;
+    }
+
+    input[type="range"],
+    select,
+    button {
+      width: 100%;
+    }
+
+    input[type="checkbox"] {
+      width: auto;
+      margin-right: 8px;
+    }
+
+    .checkbox {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-top: 12px;
+      font-size: 13px;
+    }
+
+    .value {
+      color: #aaa;
+      font-size: 12px;
+      margin-left: 6px;
+    }
+
+    select,
+    button,
+    input[type="number"] {
+      background: #1a1a1a;
+      color: white;
+      border: 1px solid #444;
+      padding: 10px;
+      border-radius: 6px;
+    }
+
+    button {
+      cursor: pointer;
+      background: #202020;
+    }
+
+    button:hover {
+      background: #2a2a2a;
+    }
+
+    .preset-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+    }
+
+    canvas {
+      display: block;
+      width: calc(100vw - var(--panel-w));
+      height: 100vh;
+      flex: 0 0 calc(100vw - var(--panel-w));
+      background: #000;
+    }
+
+    .tiny {
+      font-size: 11px;
+      color: #888;
+      line-height: 1.4;
+      margin-top: 8px;
+    }
+  </style>
+</head>
+<body>
+  <div id="controls">
+    <h1>Sunflower Generator Pro</h1>
+    <div class="sub">
+      Phyllotaxis-based radial pattern generator with dual petal rings,
+      framed composition, HD export, and SVG output.
+    </div>
+
+    <div class="group">
+      <h3>Presets</h3>
+      <div class="preset-grid">
+        <button type="button" data-preset="sunflower">Sunflower</button>
+        <button type="button" data-preset="dense">Dense Core</button>
+        <button type="button" data-preset="minimal">Minimal</button>
+        <button type="button" data-preset="study">Golden Study</button>
+        <button type="button" data-preset="amber">Burnt Amber</button>
+        <button type="button" data-preset="mono">Monochrome</button>
+      </div>
+    </div>
+
+    <div class="group">
+      <h3>Structure</h3>
+
+      <label>
+        Points
+        <span class="value" id="pointsVal">1800</span>
+      </label>
+      <input type="range" id="points" min="100" max="8000" step="50" value="1800" />
+
+      <label>
+        Angle (°)
+        <span class="value" id="angleVal">137.5</span>
+      </label>
+      <input type="range" id="angle" min="130" max="145" step="0.1" value="137.5" />
+
+      <label class="checkbox">
+        <input type="checkbox" id="lockGolden" checked />
+        Lock true golden angle
+      </label>
+
+      <label>
+        Framing
+        <span class="value" id="framingVal">0.78</span>
+      </label>
+      <input type="range" id="framing" min="0.55" max="0.95" step="0.01" value="0.78" />
+
+      <label>
+        Radius Curve
+        <span class="value" id="radiusPowerVal">0.50</span>
+      </label>
+      <input type="range" id="radiusPower" min="0.35" max="0.75" step="0.01" value="0.50" />
+
+      <div class="tiny">
+        Radius curve changes how tightly points accumulate toward the centre.
+        0.50 is the classic square-root phyllotaxis.
+      </div>
+    </div>
+
+    <div class="group">
+      <h3>Seeds</h3>
+
+      <label>
+        Base Size
+        <span class="value" id="sizeVal">2.4</span>
+      </label>
+      <input type="range" id="size" min="0.5" max="12" step="0.1" value="2.4" />
+
+      <label>
+        Size Falloff
+        <span class="value" id="sizeCurveVal">0.55</span>
+      </label>
+      <input type="range" id="sizeCurve" min="-1.5" max="1.5" step="0.05" value="0.55" />
+
+      <label>
+        Seed Shape
+      </label>
+      <select id="shape">
+        <option value="circle">Circle</option>
+        <option value="square">Square</option>
+        <option value="ellipse" selected>Ellipse</option>
+      </select>
+
+      <label>
+        Ellipse Stretch
+        <span class="value" id="stretchVal">1.45</span>
+      </label>
+      <input type="range" id="stretch" min="1" max="3" step="0.05" value="1.45" />
+    </div>
+
+    <div class="group">
+      <h3>Front Petal Ring</h3>
+
+      <label class="checkbox">
+        <input type="checkbox" id="showPetals" checked />
+        Show front petal ring
+      </label>
+
+      <label>
+        Petal Count
+        <span class="value" id="petalCountVal">34</span>
+      </label>
+      <input type="range" id="petalCount" min="12" max="80" step="1" value="34" />
+
+      <label>
+        Petal Length
+        <span class="value" id="petalLengthVal">90</span>
+      </label>
+      <input type="range" id="petalLength" min="20" max="220" step="1" value="90" />
+
+      <label>
+        Petal Width
+        <span class="value" id="petalWidthVal">26</span>
+      </label>
+      <input type="range" id="petalWidth" min="6" max="80" step="1" value="26" />
+
+      <label>
+        Petal Offset
+        <span class="value" id="petalOffsetVal">10</span>
+      </label>
+      <input type="range" id="petalOffset" min="-20" max="60" step="1" value="10" />
+
+      <label>
+        Petal Opacity
+        <span class="value" id="petalOpacityVal">0.95</span>
+      </label>
+      <input type="range" id="petalOpacity" min="0.1" max="1" step="0.05" value="0.95" />
+    </div>
+
+    <div class="group">
+      <h3>Back Petal Ring</h3>
+
+      <label class="checkbox">
+        <input type="checkbox" id="showBackPetals" checked />
+        Show back petal ring
+      </label>
+
+      <label>
+        Back Petal Length
+        <span class="value" id="backPetalLengthVal">120</span>
+      </label>
+      <input type="range" id="backPetalLength" min="20" max="260" step="1" value="120" />
+
+      <label>
+        Back Petal Width
+        <span class="value" id="backPetalWidthVal">32</span>
+      </label>
+      <input type="range" id="backPetalWidth" min="6" max="100" step="1" value="32" />
+
+      <label>
+        Back Petal Offset
+        <span class="value" id="backPetalOffsetVal">24</span>
+      </label>
+      <input type="range" id="backPetalOffset" min="-20" max="80" step="1" value="24" />
+
+      <label>
+        Back Petal Opacity
+        <span class="value" id="backPetalOpacityVal">0.72</span>
+      </label>
+      <input type="range" id="backPetalOpacity" min="0.1" max="1" step="0.05" value="0.72" />
+
+      <label>
+        Back Ring Rotation
+        <span class="value" id="backPetalRotationVal">0.50</span>
+      </label>
+      <input type="range" id="backPetalRotation" min="0" max="1" step="0.05" value="0.50" />
+
+      <div class="tiny">
+        Back ring uses the same petal count as the front ring for mathematical consistency.
+        Rotation offsets it between the front petals.
+      </div>
+    </div>
+
+    <div class="group">
+      <h3>Colour</h3>
+
+      <label>
+        Palette
+      </label>
+      <select id="palette">
+        <option value="amber">Burnt Amber</option>
+        <option value="sunflower" selected>Sunflower</option>
+        <option value="charcoal">Charcoal</option>
+        <option value="bone">Bone</option>
+        <option value="copper">Copper</option>
+        <option value="mono">Monochrome</option>
+      </select>
+
+      <label>
+        Background
+      </label>
+      <select id="background">
+        <option value="black" selected>Black</option>
+        <option value="charcoal">Dark Charcoal</option>
+        <option value="paper">Warm Paper</option>
+        <option value="transparent">Transparent</option>
+      </select>
+
+      <label>
+        Contrast
+        <span class="value" id="contrastVal">1.00</span>
+      </label>
+      <input type="range" id="contrast" min="0.5" max="1.8" step="0.05" value="1.00" />
+    </div>
+
+    <div class="group">
+      <h3>Export</h3>
+
+      <label>
+        PNG Size
+      </label>
+      <select id="exportSize">
+        <option value="screen">Screen size</option>
+        <option value="2000">2000 px</option>
+        <option value="3000">3000 px</option>
+        <option value="4000" selected>4000 px</option>
+        <option value="6000">6000 px</option>
+      </select>
+
+      <div class="row" style="margin-top: 12px;">
+        <button type="button" id="downloadPng">Download PNG</button>
+      </div>
+    </div>
+  </div>
+
+  <canvas id="canvas"></canvas>
+
+  <script>
+    const GOLDEN_ANGLE = 137.50776405003785;
+
+    const canvas = document.getElementById("canvas");
+    const ctx = canvas.getContext("2d");
+
+    const controls = {
+      points: document.getElementById("points"),
+      angle: document.getElementById("angle"),
+      lockGolden: document.getElementById("lockGolden"),
+      framing: document.getElementById("framing"),
+      radiusPower: document.getElementById("radiusPower"),
+      size: document.getElementById("size"),
+      sizeCurve: document.getElementById("sizeCurve"),
+      shape: document.getElementById("shape"),
+      stretch: document.getElementById("stretch"),
+      showPetals: document.getElementById("showPetals"),
+      petalCount: document.getElementById("petalCount"),
+      petalLength: document.getElementById("petalLength"),
+      petalWidth: document.getElementById("petalWidth"),
+      petalOffset: document.getElementById("petalOffset"),
+      petalOpacity: document.getElementById("petalOpacity"),
+      showBackPetals: document.getElementById("showBackPetals"),
+      backPetalLength: document.getElementById("backPetalLength"),
+      backPetalWidth: document.getElementById("backPetalWidth"),
+      backPetalOffset: document.getElementById("backPetalOffset"),
+      backPetalOpacity: document.getElementById("backPetalOpacity"),
+      backPetalRotation: document.getElementById("backPetalRotation"),
+      palette: document.getElementById("palette"),
+      background: document.getElementById("background"),
+      contrast: document.getElementById("contrast"),
+      exportSize: document.getElementById("exportSize"),
+    };
+
+    const valueLabels = {
+      points: document.getElementById("pointsVal"),
+      angle: document.getElementById("angleVal"),
+      framing: document.getElementById("framingVal"),
+      radiusPower: document.getElementById("radiusPowerVal"),
+      size: document.getElementById("sizeVal"),
+      sizeCurve: document.getElementById("sizeCurveVal"),
+      stretch: document.getElementById("stretchVal"),
+      petalCount: document.getElementById("petalCountVal"),
+      petalLength: document.getElementById("petalLengthVal"),
+      petalWidth: document.getElementById("petalWidthVal"),
+      petalOffset: document.getElementById("petalOffsetVal"),
+      petalOpacity: document.getElementById("petalOpacityVal"),
+      backPetalLength: document.getElementById("backPetalLengthVal"),
+      backPetalWidth: document.getElementById("backPetalWidthVal"),
+      backPetalOffset: document.getElementById("backPetalOffsetVal"),
+      backPetalOpacity: document.getElementById("backPetalOpacityVal"),
+      backPetalRotation: document.getElementById("backPetalRotationVal"),
+      contrast: document.getElementById("contrastVal"),
+    };
+
+    const presets = {
+      sunflower: {
+        points: 1800,
+        angle: GOLDEN_ANGLE,
+        lockGolden: true,
+        framing: 0.78,
+        radiusPower: 0.50,
+        size: 2.4,
+        sizeCurve: 0.55,
+        shape: "ellipse",
+        stretch: 1.45,
+        showPetals: true,
+        petalCount: 34,
+        petalLength: 90,
+        petalWidth: 26,
+        petalOffset: 10,
+        petalOpacity: 0.95,
+        showBackPetals: true,
+        backPetalLength: 120,
+        backPetalWidth: 32,
+        backPetalOffset: 24,
+        backPetalOpacity: 0.72,
+        backPetalRotation: 0.50,
+        palette: "sunflower",
+        background: "black",
+        contrast: 1.00,
+      },
+      dense: {
+        points: 4200,
+        angle: GOLDEN_ANGLE,
+        lockGolden: true,
+        framing: 0.90,
+        radiusPower: 0.50,
+        size: 2.0,
+        sizeCurve: 1.10,
+        shape: "circle",
+        stretch: 1.4,
+        showPetals: false,
+        petalCount: 34,
+        petalLength: 90,
+        petalWidth: 26,
+        petalOffset: 10,
+        petalOpacity: 0.95,
+        showBackPetals: false,
+        backPetalLength: 120,
+        backPetalWidth: 32,
+        backPetalOffset: 24,
+        backPetalOpacity: 0.72,
+        backPetalRotation: 0.50,
+        palette: "amber",
+        background: "black",
+        contrast: 1.15,
+      },
+      minimal: {
+        points: 700,
+        angle: GOLDEN_ANGLE,
+        lockGolden: true,
+        framing: 0.78,
+        radiusPower: 0.50,
+        size: 4.6,
+        sizeCurve: 0.35,
+        shape: "circle",
+        stretch: 1.4,
+        showPetals: false,
+        petalCount: 34,
+        petalLength: 90,
+        petalWidth: 26,
+        petalOffset: 10,
+        petalOpacity: 0.95,
+        showBackPetals: false,
+        backPetalLength: 120,
+        backPetalWidth: 32,
+        backPetalOffset: 24,
+        backPetalOpacity: 0.72,
+        backPetalRotation: 0.50,
+        palette: "bone",
+        background: "paper",
+        contrast: 0.90,
+      },
+      study: {
+        points: 1600,
+        angle: GOLDEN_ANGLE,
+        lockGolden: true,
+        framing: 0.82,
+        radiusPower: 0.50,
+        size: 2.2,
+        sizeCurve: 0.0,
+        shape: "circle",
+        stretch: 1.0,
+        showPetals: false,
+        petalCount: 34,
+        petalLength: 90,
+        petalWidth: 26,
+        petalOffset: 10,
+        petalOpacity: 0.95,
+        showBackPetals: false,
+        backPetalLength: 120,
+        backPetalWidth: 32,
+        backPetalOffset: 24,
+        backPetalOpacity: 0.72,
+        backPetalRotation: 0.50,
+        palette: "charcoal",
+        background: "paper",
+        contrast: 1.00,
+      },
+      amber: {
+        points: 2000,
+        angle: GOLDEN_ANGLE,
+        lockGolden: true,
+        framing: 0.84,
+        radiusPower: 0.50,
+        size: 2.7,
+        sizeCurve: 0.75,
+        shape: "ellipse",
+        stretch: 1.55,
+        showPetals: true,
+        petalCount: 34,
+        petalLength: 100,
+        petalWidth: 28,
+        petalOffset: 12,
+        petalOpacity: 0.95,
+        showBackPetals: true,
+        backPetalLength: 130,
+        backPetalWidth: 34,
+        backPetalOffset: 28,
+        backPetalOpacity: 0.70,
+        backPetalRotation: 0.50,
+        palette: "amber",
+        background: "black",
+        contrast: 1.20,
+      },
+      mono: {
+        points: 1800,
+        angle: GOLDEN_ANGLE,
+        lockGolden: true,
+        framing: 0.84,
+        radiusPower: 0.50,
+        size: 2.3,
+        sizeCurve: 0.55,
+        shape: "circle",
+        stretch: 1.0,
+        showPetals: false,
+        petalCount: 34,
+        petalLength: 90,
+        petalWidth: 26,
+        petalOffset: 10,
+        petalOpacity: 0.95,
+        showBackPetals: false,
+        backPetalLength: 120,
+        backPetalWidth: 32,
+        backPetalOffset: 24,
+        backPetalOpacity: 0.72,
+        backPetalRotation: 0.50,
+        palette: "mono",
+        background: "black",
+        contrast: 1.00,
+      }
+    };
+
+    function hexToRgb(hex) {
+      const clean = hex.replace("#", "");
+      const bigint = parseInt(clean, 16);
+      return {
+        r: (bigint >> 16) & 255,
+        g: (bigint >> 8) & 255,
+        b: bigint & 255
+      };
+    }
+
+    function mix(a, b, t) {
+      return a + (b - a) * t;
+    }
+
+    function clamp(value, min, max) {
+      return Math.max(min, Math.min(max, value));
+    }
+
+    function lerpColor(c1, c2, t) {
+      const a = hexToRgb(c1);
+      const b = hexToRgb(c2);
+      return {
+        r: Math.round(mix(a.r, b.r, t)),
+        g: Math.round(mix(a.g, b.g, t)),
+        b: Math.round(mix(a.b, b.b, t)),
+      };
+    }
+
+    function rgbString(c) {
+      return `rgb(${c.r}, ${c.g}, ${c.b})`;
+    }
+
+    function getBackgroundColor(background) {
+      switch (background) {
+        case "paper": return "#efe7d3";
+        case "charcoal": return "#111111";
+        case "transparent": return null;
+        case "black":
+        default: return "#000000";
+      }
+    }
+
+    function getPaletteStops(name) {
+      switch (name) {
+        case "sunflower":
+          return ["#2a1a10", "#7a4420", "#c57a1d", "#f2c14e"];
+        case "charcoal":
+          return ["#151515", "#353535", "#777777", "#e6e6e6"];
+        case "bone":
+          return ["#3b352d", "#8a7b66", "#cdbda2", "#f5eee2"];
+        case "copper":
+          return ["#1a1412", "#6d4024", "#b96f3a", "#f0bc7a"];
+        case "mono":
+          return ["#1c1c1c", "#555555", "#aaaaaa", "#f4f4f4"];
+        case "amber":
+        default:
+          return ["#120c08", "#4a2412", "#9a4d19", "#d98c2b"];
+      }
+    }
+
+    function samplePalette(name, t, contrast = 1) {
+      const stops = getPaletteStops(name);
+      const adjusted = clamp(Math.pow(t, 1 / contrast), 0, 1);
+
+      if (adjusted <= 0.3333) {
+        return lerpColor(stops[0], stops[1], adjusted / 0.3333);
+      } else if (adjusted <= 0.6666) {
+        return lerpColor(stops[1], stops[2], (adjusted - 0.3333) / 0.3333);
+      } else {
+        return lerpColor(stops[2], stops[3], (adjusted - 0.6666) / 0.3334);
+      }
+    }
+
+    function getSettings() {
+      const lockGolden = controls.lockGolden.checked;
+      const angleDeg = lockGolden ? GOLDEN_ANGLE : parseFloat(controls.angle.value);
+
+      return {
+        points: parseInt(controls.points.value, 10),
+        angleDeg,
+        framing: parseFloat(controls.framing.value),
+        radiusPower: parseFloat(controls.radiusPower.value),
+        size: parseFloat(controls.size.value),
+        sizeCurve: parseFloat(controls.sizeCurve.value),
+        shape: controls.shape.value,
+        stretch: parseFloat(controls.stretch.value),
+        showPetals: controls.showPetals.checked,
+        petalCount: parseInt(controls.petalCount.value, 10),
+        petalLength: parseFloat(controls.petalLength.value),
+        petalWidth: parseFloat(controls.petalWidth.value),
+        petalOffset: parseFloat(controls.petalOffset.value),
+        petalOpacity: parseFloat(controls.petalOpacity.value),
+        showBackPetals: controls.showBackPetals.checked,
+        backPetalLength: parseFloat(controls.backPetalLength.value),
+        backPetalWidth: parseFloat(controls.backPetalWidth.value),
+        backPetalOffset: parseFloat(controls.backPetalOffset.value),
+        backPetalOpacity: parseFloat(controls.backPetalOpacity.value),
+        backPetalRotation: parseFloat(controls.backPetalRotation.value),
+        palette: controls.palette.value,
+        background: controls.background.value,
+        contrast: parseFloat(controls.contrast.value),
+        exportSize: controls.exportSize.value,
+        lockGolden,
+      };
+    }
+
+    function updateLabels() {
+      const s = getSettings();
+      valueLabels.points.textContent = s.points;
+      valueLabels.angle.textContent = s.angleDeg.toFixed(1);
+      valueLabels.framing.textContent = s.framing.toFixed(2);
+      valueLabels.radiusPower.textContent = s.radiusPower.toFixed(2);
+      valueLabels.size.textContent = s.size.toFixed(1);
+      valueLabels.sizeCurve.textContent = s.sizeCurve.toFixed(2);
+      valueLabels.stretch.textContent = s.stretch.toFixed(2);
+      valueLabels.petalCount.textContent = s.petalCount;
+      valueLabels.petalLength.textContent = s.petalLength.toFixed(0);
+      valueLabels.petalWidth.textContent = s.petalWidth.toFixed(0);
+      valueLabels.petalOffset.textContent = s.petalOffset.toFixed(0);
+      valueLabels.petalOpacity.textContent = s.petalOpacity.toFixed(2);
+      valueLabels.backPetalLength.textContent = s.backPetalLength.toFixed(0);
+      valueLabels.backPetalWidth.textContent = s.backPetalWidth.toFixed(0);
+      valueLabels.backPetalOffset.textContent = s.backPetalOffset.toFixed(0);
+      valueLabels.backPetalOpacity.textContent = s.backPetalOpacity.toFixed(2);
+      valueLabels.backPetalRotation.textContent = s.backPetalRotation.toFixed(2);
+      valueLabels.contrast.textContent = s.contrast.toFixed(2);
+
+      controls.angle.disabled = s.lockGolden;
+    }
+
+    function resizeCanvas() {
+      const panelWidth = document.getElementById("controls").offsetWidth;
+      canvas.width = window.innerWidth - panelWidth;
+      canvas.height = window.innerHeight;
+      drawPreview();
+    }
+
+    function computePoints(settings, width, height) {
+      const points = [];
+      const angle = settings.angleDeg * Math.PI / 180;
+      const cx = width / 2;
+      const cy = height / 2;
+
+      const maxRadiusRaw = Math.pow(settings.points, settings.radiusPower);
+      const targetRadius = Math.min(width, height) * 0.5 * settings.framing;
+      const scale = targetRadius / maxRadiusRaw;
+
+      for (let i = 1; i <= settings.points; i++) {
+        const t = i / settings.points;
+        const r = scale * Math.pow(i, settings.radiusPower);
+        const theta = i * angle;
+        const x = cx + r * Math.cos(theta);
+        const y = cy + r * Math.sin(theta);
+
+        let sizeFactor = 1 + settings.sizeCurve * (t - 0.5);
+        sizeFactor = clamp(sizeFactor, 0.15, 3);
+        const radius = settings.size * sizeFactor;
+
+        const color = samplePalette(settings.palette, t, settings.contrast);
+
+        points.push({
+          x, y, theta, t, radius, color
+        });
+      }
+
+      return { points, cx, cy, targetRadius };
+    }
+
+    function drawSeed(ctx, point, settings) {
+      ctx.fillStyle = rgbString(point.color);
+
+      if (settings.shape === "square") {
+        const side = point.radius * 2;
+        ctx.fillRect(point.x - side / 2, point.y - side / 2, side, side);
+        return;
+      }
+
+      if (settings.shape === "ellipse") {
+        ctx.save();
+        ctx.translate(point.x, point.y);
+        ctx.rotate(point.theta);
+        ctx.beginPath();
+        ctx.ellipse(0, 0, point.radius * settings.stretch, point.radius, 0, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.restore();
+        return;
+      }
+
+      ctx.beginPath();
+      ctx.arc(point.x, point.y, point.radius, 0, Math.PI * 2);
+      ctx.fill();
+    }
+
+    function drawPetalRing(ctx, options) {
+      const {
+        cx,
+        cy,
+        baseRadius,
+        count,
+        length,
+        width,
+        opacity,
+        rotationOffset = 0,
+        colors
+      } = options;
+
+      for (let i = 0; i < count; i++) {
+        const theta = ((i + rotationOffset) / count) * Math.PI * 2;
+        const x = cx + baseRadius * Math.cos(theta);
+        const y = cy + baseRadius * Math.sin(theta);
+
+        ctx.save();
+        ctx.translate(x, y);
+        ctx.rotate(theta + Math.PI / 2);
+
+        const grad = ctx.createLinearGradient(0, -length * 0.5, 0, length * 0.5);
+        grad.addColorStop(0, `rgba(${colors[0][0]}, ${colors[0][1]}, ${colors[0][2]}, ${opacity})`);
+        grad.addColorStop(0.55, `rgba(${colors[1][0]}, ${colors[1][1]}, ${colors[1][2]}, ${opacity})`);
+        grad.addColorStop(1, `rgba(${colors[2][0]}, ${colors[2][1]}, ${colors[2][2]}, ${opacity * 0.92})`);
+
+        ctx.fillStyle = grad;
+
+        ctx.beginPath();
+        ctx.moveTo(0, -length / 2);
+        ctx.bezierCurveTo(
+          width / 2, -length / 4,
+          width / 2, length / 4,
+          0, length / 2
+        );
+        ctx.bezierCurveTo(
+          -width / 2, length / 4,
+          -width / 2, -length / 4,
+          0, -length / 2
+        );
+        ctx.closePath();
+        ctx.fill();
+
+        ctx.restore();
+      }
+    }
+
+function drawPetals(ctx, settings, width, height) {
+  const cx = width / 2;
+  const cy = height / 2;
+  const targetRadius = Math.min(width, height) * 0.5 * settings.framing;
+
+  function darken(color, factor) {
+    return [
+      Math.round(color.r * factor),
+      Math.round(color.g * factor),
+      Math.round(color.b * factor)
+    ];
+  }
+
+  // Build petal colours from the selected palette
+  const frontTop = samplePalette(settings.palette, 0.95, settings.contrast);
+  const frontMid = samplePalette(settings.palette, 0.70, settings.contrast);
+  const frontBase = samplePalette(settings.palette, 0.40, settings.contrast);
+
+  const backTop = darken(frontTop, 0.65);
+  const backMid = darken(frontMid, 0.55);
+  const backBase = darken(frontBase, 0.45);
+
+  if (settings.showBackPetals) {
+    drawPetalRing(ctx, {
+      cx,
+      cy,
+      baseRadius: targetRadius + settings.backPetalOffset,
+      count: settings.petalCount,
+      length: settings.backPetalLength,
+      width: settings.backPetalWidth,
+      opacity: settings.backPetalOpacity,
+      rotationOffset: settings.backPetalRotation,
+      colors: [
+        backTop,
+        backMid,
+        backBase
+      ]
+    });
+  }
+
+  if (settings.showPetals) {
+    drawPetalRing(ctx, {
+      cx,
+      cy,
+      baseRadius: targetRadius + settings.petalOffset,
+      count: settings.petalCount,
+      length: settings.petalLength,
+      width: settings.petalWidth,
+      opacity: settings.petalOpacity,
+      rotationOffset: 0,
+      colors: [
+        [frontTop.r, frontTop.g, frontTop.b],
+        [frontMid.r, frontMid.g, frontMid.b],
+        [frontBase.r, frontBase.g, frontBase.b]
+      ]
+    });
+  }
+}
+
+    function renderToContext(ctx, width, height, settings) {
+      const bg = getBackgroundColor(settings.background);
+
+      ctx.clearRect(0, 0, width, height);
+
+      if (bg) {
+        ctx.fillStyle = bg;
+        ctx.fillRect(0, 0, width, height);
+      }
+
+      drawPetals(ctx, settings, width, height);
+
+      const { points } = computePoints(settings, width, height);
+
+      for (const point of points) {
+        drawSeed(ctx, point, settings);
+      }
+    }
+
+    function drawPreview() {
+      updateLabels();
+      const settings = getSettings();
+      renderToContext(ctx, canvas.width, canvas.height, settings);
+    }
+
+    function downloadBlob(blob, filename) {
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = filename;
+      a.click();
+      URL.revokeObjectURL(url);
+    }
+
+    function getExportDimensions(settings) {
+      let width, height;
+
+      if (settings.exportSize === "screen") {
+        width = canvas.width;
+        height = canvas.height;
+      } else {
+        const targetLongSide = parseInt(settings.exportSize, 10);
+        const aspect = canvas.width / canvas.height;
+
+        if (canvas.width >= canvas.height) {
+          width = targetLongSide;
+          height = Math.round(targetLongSide / aspect);
+        } else {
+          height = targetLongSide;
+          width = Math.round(targetLongSide * aspect);
+        }
+      }
+
+      return { width, height };
+    }
+
+    function exportPNG() {
+  const settings = getSettings();
+  const exportCanvas = document.createElement("canvas");
+  const exportCtx = exportCanvas.getContext("2d");
+
+  let width, height;
+
+  if (settings.exportSize === "screen") {
+    width = canvas.width;
+    height = canvas.height;
+  } else {
+    const targetLongSide = parseInt(settings.exportSize, 10);
+    const aspect = canvas.width / canvas.height;
+
+    if (canvas.width >= canvas.height) {
+      width = targetLongSide;
+      height = Math.round(targetLongSide / aspect);
+    } else {
+      height = targetLongSide;
+      width = Math.round(targetLongSide * aspect);
+    }
+  }
+
+  exportCanvas.width = width;
+  exportCanvas.height = height;
+
+  exportCtx.imageSmoothingEnabled = true;
+  exportCtx.imageSmoothingQuality = "high";
+
+  exportCtx.clearRect(0, 0, width, height);
+  exportCtx.drawImage(canvas, 0, 0, width, height);
+
+  exportCanvas.toBlob((blob) => {
+    if (!blob) return;
+    downloadBlob(blob, "sunflower-generator.png");
+  }, "image/png");
+}
+    function exportSVG() {
+      const settings = getSettings();
+      const { width, height } = getExportDimensions(settings);
+      const bg = getBackgroundColor(settings.background);
+      const { points } = computePoints(settings, width, height);
+
+      let svg = "";
+      svg += `<svg xmlns="http://www.w3.org/2000/svg" width="${width}" height="${height}" viewBox="0 0 ${width} ${height}">`;
+
+      if (bg) {
+        svg += `<rect width="100%" height="100%" fill="${bg}" />`;
+      }
+
+      svg += `<defs>
+        <linearGradient id="frontPetalGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+          <stop offset="0%" stop-color="rgb(242,193,78)" stop-opacity="${settings.petalOpacity}" />
+          <stop offset="55%" stop-color="rgb(212,138,43)" stop-opacity="${settings.petalOpacity}" />
+          <stop offset="100%" stop-color="rgb(122,68,32)" stop-opacity="${(settings.petalOpacity * 0.92).toFixed(3)}" />
+        </linearGradient>
+        <linearGradient id="backPetalGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+          <stop offset="0%" stop-color="rgb(120,70,20)" stop-opacity="${settings.backPetalOpacity}" />
+          <stop offset="55%" stop-color="rgb(95,48,18)" stop-opacity="${settings.backPetalOpacity}" />
+          <stop offset="100%" stop-color="rgb(55,28,12)" stop-opacity="${(settings.backPetalOpacity * 0.92).toFixed(3)}" />
+        </linearGradient>
+      </defs>`;
+
+      const cx = width / 2;
+      const cy = height / 2;
+      const targetRadius = Math.min(width, height) * 0.5 * settings.framing;
+
+      if (settings.showBackPetals) {
+        const baseRadius = targetRadius + settings.backPetalOffset;
+        for (let i = 0; i < settings.petalCount; i++) {
+          const theta = ((i + settings.backPetalRotation) / settings.petalCount) * Math.PI * 2;
+          const x = cx + baseRadius * Math.cos(theta);
+          const y = cy + baseRadius * Math.sin(theta);
+          const deg = (theta * 180 / Math.PI) + 90;
+          const halfLength = settings.backPetalLength / 2;
+          const quarterLength = settings.backPetalLength / 4;
+          const halfWidth = settings.backPetalWidth / 2;
+
+          const d = [
+            `M 0 ${-halfLength}`,
+            `C ${halfWidth} ${-quarterLength}, ${halfWidth} ${quarterLength}, 0 ${halfLength}`,
+            `C ${-halfWidth} ${quarterLength}, ${-halfWidth} ${-quarterLength}, 0 ${-halfLength}`,
+            `Z`
+          ].join(" ");
+
+          svg += `<path d="${d}" fill="url(#backPetalGrad)" transform="translate(${x.toFixed(3)} ${y.toFixed(3)}) rotate(${deg.toFixed(3)})" />`;
+        }
+      }
+
+      if (settings.showPetals) {
+        const baseRadius = targetRadius + settings.petalOffset;
+        for (let i = 0; i < settings.petalCount; i++) {
+          const theta = (i / settings.petalCount) * Math.PI * 2;
+          const x = cx + baseRadius * Math.cos(theta);
+          const y = cy + baseRadius * Math.sin(theta);
+          const deg = (theta * 180 / Math.PI) + 90;
+          const halfLength = settings.petalLength / 2;
+          const quarterLength = settings.petalLength / 4;
+          const halfWidth = settings.petalWidth / 2;
+
+          const d = [
+            `M 0 ${-halfLength}`,
+            `C ${halfWidth} ${-quarterLength}, ${halfWidth} ${quarterLength}, 0 ${halfLength}`,
+            `C ${-halfWidth} ${quarterLength}, ${-halfWidth} ${-quarterLength}, 0 ${-halfLength}`,
+            `Z`
+          ].join(" ");
+
+          svg += `<path d="${d}" fill="url(#frontPetalGrad)" transform="translate(${x.toFixed(3)} ${y.toFixed(3)}) rotate(${deg.toFixed(3)})" />`;
+        }
+      }
+
+      for (const p of points) {
+        const fill = rgbString(p.color);
+
+        if (settings.shape === "square") {
+          const side = p.radius * 2;
+          svg += `<rect x="${(p.x - side / 2).toFixed(3)}" y="${(p.y - side / 2).toFixed(3)}" width="${side.toFixed(3)}" height="${side.toFixed(3)}" fill="${fill}" />`;
+        } else if (settings.shape === "ellipse") {
+          const rx = p.radius * settings.stretch;
+          const ry = p.radius;
+          const deg = p.theta * 180 / Math.PI;
+          svg += `<ellipse cx="${p.x.toFixed(3)}" cy="${p.y.toFixed(3)}" rx="${rx.toFixed(3)}" ry="${ry.toFixed(3)}" fill="${fill}" transform="rotate(${deg.toFixed(3)} ${p.x.toFixed(3)} ${p.y.toFixed(3)})" />`;
+        } else {
+          svg += `<circle cx="${p.x.toFixed(3)}" cy="${p.y.toFixed(3)}" r="${p.radius.toFixed(3)}" fill="${fill}" />`;
+        }
+      }
+
+      svg += `</svg>`;
+
+      const blob = new Blob([svg], { type: "image/svg+xml" });
+      downloadBlob(blob, "sunflower-generator.svg");
+    }
+
+    function applyPreset(name) {
+      const preset = presets[name];
+      if (!preset) return;
+
+      controls.points.value = preset.points;
+      controls.angle.value = preset.angle;
+      controls.lockGolden.checked = preset.lockGolden;
+      controls.framing.value = preset.framing;
+      controls.radiusPower.value = preset.radiusPower;
+      controls.size.value = preset.size;
+      controls.sizeCurve.value = preset.sizeCurve;
+      controls.shape.value = preset.shape;
+      controls.stretch.value = preset.stretch;
+      controls.showPetals.checked = preset.showPetals;
+      controls.petalCount.value = preset.petalCount;
+      controls.petalLength.value = preset.petalLength;
+      controls.petalWidth.value = preset.petalWidth;
+      controls.petalOffset.value = preset.petalOffset;
+      controls.petalOpacity.value = preset.petalOpacity;
+      controls.showBackPetals.checked = preset.showBackPetals;
+      controls.backPetalLength.value = preset.backPetalLength;
+      controls.backPetalWidth.value = preset.backPetalWidth;
+      controls.backPetalOffset.value = preset.backPetalOffset;
+      controls.backPetalOpacity.value = preset.backPetalOpacity;
+      controls.backPetalRotation.value = preset.backPetalRotation;
+      controls.palette.value = preset.palette;
+      controls.background.value = preset.background;
+      controls.contrast.value = preset.contrast;
+
+      drawPreview();
+    }
+
+    Object.values(controls).forEach((control) => {
+      control.addEventListener("input", drawPreview);
+      control.addEventListener("change", drawPreview);
+    });
+
+    document.querySelectorAll("[data-preset]").forEach((button) => {
+      button.addEventListener("click", () => {
+        applyPreset(button.dataset.preset);
+      });
+    });
+
+    document.getElementById("downloadPng").addEventListener("click", exportPNG);
+
+    window.addEventListener("resize", resizeCanvas);
+
+    applyPreset("sunflower");
+    resizeCanvas();
+  </script>
+</body>
+</html>
