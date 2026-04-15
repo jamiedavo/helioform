@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Growth Field</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div class="preview-panel">
+    <div class="preview-stage">
+      <canvas id="canvas"></canvas>
+    </div>
+
+    <div class="mobile-preview-actions">
+      <div class="row">
+        <button type="button" id="downloadPngTop">Download PNG</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="controls">
+    <h1>Growth Field</h1>
+    <div class="sub">
+      Flow-field generator for tendrils, roots, veins, and branching line systems.
+      Guide seeds through a directional field and export layered organic compositions.
+    </div>
+
+    <div class="group">
+      <h3>Presets</h3>
+      <div class="preset-grid">
+        <button type="button" data-preset="roots">Roots</button>
+        <button type="button" data-preset="drift">Drift</button>
+        <button type="button" data-preset="vortex">Vortex</button>
+        <button type="button" data-preset="contour">Contour</button>
+        <button type="button" data-preset="mono">Monochrome</button>
+        <button type="button" data-preset="paper">Paper Study</button>
+      </div>
+    </div>
+
+    <div class="group">
+      <h3>Field</h3>
+
+      <label>
+        Seed Count
+        <span class="value" id="seedCountVal">900</span>
+      </label>
+      <input type="range" id="seedCount" min="80" max="2400" step="20" value="900" />
+
+      <label>
+        Steps
+        <span class="value" id="stepsVal">120</span>
+      </label>
+      <input type="range" id="steps" min="20" max="300" step="5" value="120" />
+
+      <label>
+        Step Length
+        <span class="value" id="stepLengthVal">2.20</span>
+      </label>
+      <input type="range" id="stepLength" min="0.5" max="6" step="0.1" value="2.2" />
+
+      <label>
+        Field Scale
+        <span class="value" id="fieldScaleVal">0.010</span>
+      </label>
+      <input type="range" id="fieldScale" min="0.002" max="0.03" step="0.001" value="0.010" />
+
+      <label>
+        Curl
+        <span class="value" id="curlVal">1.20</span>
+      </label>
+      <input type="range" id="curl" min="0" max="4" step="0.05" value="1.20" />
+
+      <label>
+        Swirl
+        <span class="value" id="swirlVal">0.35</span>
+      </label>
+      <input type="range" id="swirl" min="-2" max="2" step="0.05" value="0.35" />
+
+      <label>
+        Noise Blend
+        <span class="value" id="noiseVal">0.45</span>
+      </label>
+      <input type="range" id="noise" min="0" max="1" step="0.02" value="0.45" />
+    </div>
+
+    <div class="group">
+      <h3>Seeds</h3>
+
+      <label>
+        Seed Spread
+        <span class="value" id="spreadVal">0.92</span>
+      </label>
+      <input type="range" id="spread" min="0.2" max="1.2" step="0.01" value="0.92" />
+
+      <label>
+        Start Jitter
+        <span class="value" id="startJitterVal">0.18</span>
+      </label>
+      <input type="range" id="startJitter" min="0" max="1" step="0.02" value="0.18" />
+
+      <label>
+        Center Bias
+        <span class="value" id="centerBiasVal">0.15</span>
+      </label>
+      <input type="range" id="centerBias" min="-1" max="1" step="0.02" value="0.15" />
+    </div>
+
+    <div class="group">
+      <h3>Lines</h3>
+
+      <label>
+        Line Width
+        <span class="value" id="lineWidthVal">1.10</span>
+      </label>
+      <input type="range" id="lineWidth" min="0.2" max="4" step="0.05" value="1.10" />
+
+      <label>
+        Line Opacity
+        <span class="value" id="lineOpacityVal">0.26</span>
+      </label>
+      <input type="range" id="lineOpacity" min="0.02" max="1" step="0.02" value="0.26" />
+
+      <label>
+        Taper
+        <span class="value" id="taperVal">0.65</span>
+      </label>
+      <input type="range" id="taper" min="0" max="1" step="0.02" value="0.65" />
+    </div>
+
+    <div class="group">
+      <h3>Colour</h3>
+
+      <label>
+        Palette
+      </label>
+      <select id="palette">
+        <option value="moss" selected>Moss</option>
+        <option value="ember">Ember</option>
+        <option value="ocean">Ocean</option>
+        <option value="bone">Bone</option>
+        <option value="mono">Monochrome</option>
+      </select>
+
+      <label>
+        Background
+      </label>
+      <select id="background">
+        <option value="black" selected>Black</option>
+        <option value="charcoal">Dark Charcoal</option>
+        <option value="paper">Warm Paper</option>
+        <option value="transparent">Transparent</option>
+      </select>
+
+      <label>
+        Contrast
+        <span class="value" id="contrastVal">1.00</span>
+      </label>
+      <input type="range" id="contrast" min="0.5" max="1.8" step="0.05" value="1.00" />
+    </div>
+
+    <div class="group">
+      <h3>Export</h3>
+
+      <label>
+        PNG Size
+      </label>
+      <select id="exportSize">
+        <option value="screen">Screen size</option>
+        <option value="2000">2000 px</option>
+        <option value="3000">3000 px</option>
+        <option value="4000" selected>4000 px</option>
+        <option value="6000">6000 px</option>
+      </select>
+
+      <div class="row" style="margin-top: 12px;">
+        <button type="button" id="downloadPng">Download PNG</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
