@@ -193,8 +193,14 @@
       }
 
       .preview-panel {
+        position: sticky;
+        top: 0;
+        z-index: 30;
         display: block;
-        padding: 12px 12px 0;
+        padding: 10px 12px 10px;
+        background: rgba(0, 0, 0, 0.96);
+        border-bottom: 1px solid #1f1f1f;
+        transition: padding 0.2s ease;
       }
 
       .preview-stage {
@@ -204,6 +210,7 @@
       }
 
       canvas {
+        display: block;
         width: min(100%, 560px);
         height: auto;
         aspect-ratio: 1 / 1;
@@ -211,6 +218,15 @@
         min-height: 0;
         flex: none;
         margin: 0 auto;
+        transition: width 0.22s ease, max-width 0.22s ease, transform 0.22s ease;
+      }
+
+      body.scrolled-mobile .preview-panel {
+        padding: 8px 12px 8px;
+      }
+
+      body.scrolled-mobile canvas {
+        width: min(100%, 220px);
       }
 
       #controls {
@@ -219,7 +235,7 @@
         min-height: 0;
         max-height: none;
         border-right: none;
-        border-top: 1px solid #333;
+        border-top: none;
         padding: 16px 12px 28px;
         overflow: visible;
         flex: none;
@@ -230,14 +246,25 @@
         position: static;
         z-index: auto;
         width: min(100%, 560px);
-        margin: 12px auto 16px;
+        margin: 12px auto 0;
         padding: 0;
         background: transparent;
         border-bottom: none;
+        transition: width 0.22s ease, margin 0.22s ease;
+      }
+
+      body.scrolled-mobile .mobile-preview-actions {
+        width: min(100%, 220px);
+        margin-top: 8px;
       }
 
       .mobile-preview-actions .row {
         gap: 10px;
+      }
+
+      .mobile-preview-actions button {
+        min-height: 42px;
+        font-size: 15px;
       }
 
       .preset-grid {
@@ -1288,10 +1315,24 @@ function drawPetals(ctx, settings, width, height) {
     document.getElementById("downloadPng").addEventListener("click", exportPNG);
     document.getElementById("downloadPngTop").addEventListener("click", exportPNG);
 
-    window.addEventListener("resize", resizeCanvas);
+    function updateMobileScrollState() {
+      if (window.innerWidth <= 900 && window.scrollY > 110) {
+        document.body.classList.add("scrolled-mobile");
+      } else {
+        document.body.classList.remove("scrolled-mobile");
+      }
+    }
+
+    window.addEventListener("scroll", updateMobileScrollState, { passive: true });
+
+    window.addEventListener("resize", () => {
+      resizeCanvas();
+      updateMobileScrollState();
+    });
 
     applyPreset("sunflower");
     resizeCanvas();
+    updateMobileScrollState();
   </script>
 </body>
 </html>
