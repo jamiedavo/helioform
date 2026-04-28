@@ -41,36 +41,38 @@ const valueLabels = {
 
 const presets = {
   roots: {
-    seedCount: 900, steps: 120, stepLength: 2.2, fieldScale: 0.010, curl: 1.2, swirl: 0.35, noise: 0.45,
-    spread: 0.92, startJitter: 0.18, centerBias: 0.15, lineWidth: 1.1, lineOpacity: 0.26, taper: 0.65,
-    palette: "moss", background: "black", contrast: 1.0
+    seedCount: 900, steps: 120, stepLength: 2.2, fieldScale: 0.010, curl: 1.2, swirl: 0.35,
+    noise: 0.45, spread: 0.92, startJitter: 0.18, centerBias: 0.15, lineWidth: 1.1,
+    lineOpacity: 0.26, taper: 0.65, palette: "moss", background: "black", contrast: 1.0
   },
   drift: {
-    seedCount: 700, steps: 180, stepLength: 1.6, fieldScale: 0.006, curl: 0.5, swirl: -0.2, noise: 0.82,
-    spread: 1.0, startJitter: 0.4, centerBias: -0.2, lineWidth: 0.9, lineOpacity: 0.16, taper: 0.5,
-    palette: "ocean", background: "black", contrast: 1.1
+    seedCount: 700, steps: 180, stepLength: 1.6, fieldScale: 0.006, curl: 0.5, swirl: -0.2,
+    noise: 0.82, spread: 1.0, startJitter: 0.4, centerBias: -0.2, lineWidth: 0.9,
+    lineOpacity: 0.16, taper: 0.5, palette: "ocean", background: "black", contrast: 1.1
   },
   vortex: {
-    seedCount: 1200, steps: 140, stepLength: 2.0, fieldScale: 0.014, curl: 1.0, swirl: 1.35, noise: 0.30,
-    spread: 0.86, startJitter: 0.12, centerBias: 0.3, lineWidth: 1.0, lineOpacity: 0.2, taper: 0.72,
-    palette: "ember", background: "black", contrast: 1.15
+    seedCount: 1200, steps: 140, stepLength: 2.0, fieldScale: 0.014, curl: 1.0, swirl: 1.35,
+    noise: 0.30, spread: 0.86, startJitter: 0.12, centerBias: 0.3, lineWidth: 1.0,
+    lineOpacity: 0.2, taper: 0.72, palette: "ember", background: "black", contrast: 1.15
   },
   contour: {
-    seedCount: 1000, steps: 110, stepLength: 2.8, fieldScale: 0.018, curl: 2.2, swirl: 0.0, noise: 0.18,
-    spread: 1.05, startJitter: 0.08, centerBias: 0.0, lineWidth: 1.3, lineOpacity: 0.18, taper: 0.35,
-    palette: "bone", background: "paper", contrast: 0.95
+    seedCount: 1000, steps: 110, stepLength: 2.8, fieldScale: 0.018, curl: 2.2, swirl: 0.0,
+    noise: 0.18, spread: 1.05, startJitter: 0.08, centerBias: 0.0, lineWidth: 1.3,
+    lineOpacity: 0.18, taper: 0.35, palette: "bone", background: "paper", contrast: 0.95
   },
   mono: {
-    seedCount: 1100, steps: 130, stepLength: 2.1, fieldScale: 0.011, curl: 1.1, swirl: 0.2, noise: 0.52,
-    spread: 0.95, startJitter: 0.16, centerBias: 0.05, lineWidth: 1.0, lineOpacity: 0.22, taper: 0.62,
-    palette: "mono", background: "black", contrast: 1.0
+    seedCount: 1100, steps: 130, stepLength: 2.1, fieldScale: 0.011, curl: 1.1, swirl: 0.2,
+    noise: 0.52, spread: 0.95, startJitter: 0.16, centerBias: 0.05, lineWidth: 1.0,
+    lineOpacity: 0.22, taper: 0.62, palette: "mono", background: "black", contrast: 1.0
   },
   paper: {
-    seedCount: 680, steps: 160, stepLength: 1.8, fieldScale: 0.007, curl: 0.75, swirl: -0.1, noise: 0.7,
-    spread: 1.0, startJitter: 0.3, centerBias: -0.1, lineWidth: 0.8, lineOpacity: 0.14, taper: 0.7,
-    palette: "bone", background: "paper", contrast: 0.9
+    seedCount: 680, steps: 160, stepLength: 1.8, fieldScale: 0.007, curl: 0.75, swirl: -0.1,
+    noise: 0.7, spread: 1.0, startJitter: 0.3, centerBias: -0.1, lineWidth: 0.8,
+    lineOpacity: 0.14, taper: 0.7, palette: "bone", background: "paper", contrast: 0.9
   }
 };
+
+// ─── Utilities ────────────────────────────────────────────────────────────────
 
 function clamp(v, min, max) { return Math.max(min, Math.min(max, v)); }
 function mix(a, b, t) { return a + (b - a) * t; }
@@ -95,14 +97,24 @@ function rgbString(c, a = 1) {
   return `rgba(${c.r}, ${c.g}, ${c.b}, ${a})`;
 }
 
+// ─── Stochastic Jitter: deterministic per-line randomness ─────────────────────
+// Fast sin-based hash.  Each line gets stable jitter that doesn't drift between
+// redraws, without needing to store per-seed state.
+function seededRandom(seed) {
+  const x = Math.sin(seed * 127.1 + 311.7) * 43758.5453123;
+  return x - Math.floor(x);
+}
+
+// ─── Colour ───────────────────────────────────────────────────────────────────
+
 function getPaletteStops(name) {
   switch (name) {
     case "ember": return ["#28110c", "#7b2d16", "#d45a1d", "#f2ba6f"];
     case "ocean": return ["#0e1820", "#123b52", "#2e7c92", "#a7d8dd"];
-    case "bone": return ["#41392f", "#83745f", "#c7b69a", "#f3eadc"];
-    case "mono": return ["#141414", "#505050", "#9c9c9c", "#f0f0f0"];
+    case "bone":  return ["#41392f", "#83745f", "#c7b69a", "#f3eadc"];
+    case "mono":  return ["#141414", "#505050", "#9c9c9c", "#f0f0f0"];
     case "moss":
-    default: return ["#11180f", "#31442c", "#6f8f4e", "#d8d69a"];
+    default:      return ["#11180f", "#31442c", "#6f8f4e", "#d8d69a"];
   }
 }
 
@@ -123,6 +135,8 @@ function getBackgroundColor(background) {
     default: return "#000000";
   }
 }
+
+// ─── Settings ─────────────────────────────────────────────────────────────────
 
 function getSettings() {
   return {
@@ -182,6 +196,8 @@ function resizeCanvas() {
   drawPreview();
 }
 
+// ─── Field ────────────────────────────────────────────────────────────────────
+
 function randomFromSeed(seed) {
   const x = Math.sin(seed * 127.1) * 43758.5453123;
   return x - Math.floor(x);
@@ -224,10 +240,25 @@ function makeSeeds(settings, width, height) {
   return seeds;
 }
 
+// ─── Line drawing ─────────────────────────────────────────────────────────────
+// Two new features applied here:
+//
+// Stochastic Jitter — each line gets a per-seed random multiplier on both width
+// (±20 %) and opacity (×0.65 – ×1.35).  This breaks the mechanical regularity
+// where every line at the same palette position looks identical, and lets some
+// lines read as thinner, lighter "younger" growth while others are bolder.
+//
+// Shadow Pass — before drawing the tapered line segments we stroke the entire
+// path once as a single polyline, offset by (1.5 px, 2.0 px), in near-black at
+// low opacity.  One extra stroke call per seed rather than per segment, so the
+// performance cost is minimal.  The shadow accumulates naturally at crossings,
+// giving bunched areas a sense of depth without manual compositing.
+
 function drawLine(seed, settings, width, height) {
   let x = seed.x;
   let y = seed.y;
   const path = [{ x, y }];
+
   for (let i = 0; i < settings.steps; i++) {
     const angle = fieldAngle(x, y, settings, width, height);
     x += Math.cos(angle) * settings.stepLength;
@@ -235,15 +266,35 @@ function drawLine(seed, settings, width, height) {
     if (x < -40 || x > width + 40 || y < -40 || y > height + 40) break;
     path.push({ x, y });
   }
+
   if (path.length < 2) return;
 
+  // Stochastic jitter: stable per-line, decorrelated width vs opacity
+  const jSeed = seed.t * 9973;
+  const jWidth   = settings.lineWidth   * (0.80 + seededRandom(jSeed * 3.71)  * 0.40);
+  const jOpacity = settings.lineOpacity * (0.65 + seededRandom(jSeed * 11.37) * 0.70);
+
   const color = samplePalette(settings.palette, seed.t, settings.contrast);
+
+  // Shadow pass — one polyline draw, shifted lower-right
+  const shadowAlpha = Math.min(jOpacity * 0.55, 0.18);
+  ctx.strokeStyle = `rgba(0, 0, 0, ${shadowAlpha})`;
+  ctx.lineWidth = Math.max(0.1, jWidth * 1.65);
+  ctx.lineCap = "round";
+  ctx.beginPath();
+  ctx.moveTo(path[0].x + 1.5, path[0].y + 2.0);
+  for (let i = 1; i < path.length; i++) {
+    ctx.lineTo(path[i].x + 1.5, path[i].y + 2.0);
+  }
+  ctx.stroke();
+
+  // Main draw — tapered, jittered width and opacity
   for (let i = 0; i < path.length - 1; i++) {
     const p0 = path[i];
     const p1 = path[i + 1];
     const tt = i / Math.max(path.length - 2, 1);
-    const widthNow = settings.lineWidth * (1 - settings.taper * tt * 0.9);
-    ctx.strokeStyle = rgbString(color, settings.lineOpacity);
+    const widthNow = jWidth * (1 - settings.taper * tt * 0.9);
+    ctx.strokeStyle = rgbString(color, jOpacity);
     ctx.lineWidth = Math.max(0.1, widthNow);
     ctx.beginPath();
     ctx.moveTo(p0.x, p0.y);
@@ -251,6 +302,8 @@ function drawLine(seed, settings, width, height) {
     ctx.stroke();
   }
 }
+
+// ─── Render ───────────────────────────────────────────────────────────────────
 
 function renderToContext(ctx, width, height, settings) {
   const bg = getBackgroundColor(settings.background);
@@ -270,6 +323,8 @@ function drawPreview() {
   renderToContext(ctx, canvas.width, canvas.height, getSettings());
 }
 
+// ─── Presets ──────────────────────────────────────────────────────────────────
+
 function applyPreset(name) {
   const preset = presets[name];
   if (!preset) return;
@@ -278,6 +333,8 @@ function applyPreset(name) {
   });
   drawPreview();
 }
+
+// ─── Export ───────────────────────────────────────────────────────────────────
 
 function downloadBlob(blob, filename) {
   const url = URL.createObjectURL(blob);
@@ -316,6 +373,8 @@ function exportPNG() {
   }, "image/png");
 }
 
+// ─── Event wiring ─────────────────────────────────────────────────────────────
+
 Object.values(controls).forEach((control) => {
   control.addEventListener("input", drawPreview);
   control.addEventListener("change", drawPreview);
@@ -327,6 +386,8 @@ document.querySelectorAll("[data-preset]").forEach((button) => {
 
 document.getElementById("downloadPng").addEventListener("click", exportPNG);
 document.getElementById("downloadPngTop").addEventListener("click", exportPNG);
+
+// ─── Mobile touch handling ────────────────────────────────────────────────────
 
 let sliderTouch = null;
 
@@ -369,6 +430,8 @@ window.addEventListener("resize", () => {
   resizeCanvas();
   updateMobileScrollState();
 });
+
+// ─── Init ─────────────────────────────────────────────────────────────────────
 
 applyPreset("roots");
 resizeCanvas();
