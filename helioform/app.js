@@ -596,8 +596,8 @@ function drawHeadRim(ctx, settings, width, height) {
   const targetRadius = Math.min(width, height) * 0.5 * settings.framing * settings.compositionScale;
   const rimWidth = settings.headRimWidth;
 
-  const innerRadius = Math.max(0, targetRadius - rimWidth * 0.9);
-  const outerRadius = targetRadius + rimWidth * 0.75;
+  const innerRadius = Math.max(0, targetRadius - rimWidth * 1.9);
+  const outerRadius = targetRadius + rimWidth * 1.75;
 
   const dark = samplePalette(settings.palette, 0.08, settings.contrast);
   const warm = samplePalette(settings.palette, 0.26, settings.contrast);
