@@ -23,6 +23,10 @@ const controls = {
   stretch: document.getElementById("stretch"),
   seedRadiusJitter: document.getElementById("seedRadiusJitter"),
   seedOpacityJitter: document.getElementById("seedOpacityJitter"),
+  headDepthEnabled: document.getElementById("headDepthEnabled"),
+  headDepthStrength: document.getElementById("headDepthStrength"),
+  headLightAngle: document.getElementById("headLightAngle"),
+  headCentreShadow: document.getElementById("headCentreShadow"),
   showPetals: document.getElementById("showPetals"),
   petalType: document.getElementById("petalType"),
   petalCount: document.getElementById("petalCount"),
@@ -65,6 +69,9 @@ const valueLabels = {
   stretch: document.getElementById("stretchVal"),
   seedRadiusJitter: document.getElementById("seedRadiusJitterVal"),
   seedOpacityJitter: document.getElementById("seedOpacityJitterVal"),
+  headDepthStrength: document.getElementById("headDepthStrengthVal"),
+  headLightAngle: document.getElementById("headLightAngleVal"),
+  headCentreShadow: document.getElementById("headCentreShadowVal"),
   petalCount: document.getElementById("petalCountVal"),
   petalLength: document.getElementById("petalLengthVal"),
   petalWidth: document.getElementById("petalWidthVal"),
@@ -87,6 +94,7 @@ const presets = {
   sunflower: {
     points: 1800, angle: GOLDEN_ANGLE, lockGolden: true, framing: 0.78, radiusPower: 0.50,
     seedProfile: "natural", size: 2.4, sizeCurve: 0.55, shape: "ellipse", stretch: 1.45,
+    headDepthEnabled: true, headDepthStrength: 0.36, headLightAngle: -45, headCentreShadow: 0.38,
     showPetals: true, petalType: "classic", petalCount: 34, petalLength: 90, petalWidth: 26,
     petalOffset: 2, petalOpacity: 0.95, headRimEnabled: true, headRimWidth: 24, headRimOpacity: 0.38, showBackPetals: true, backPetalLength: 120,
     backPetalWidth: 32, backPetalOffset: 24, backPetalOpacity: 0.72, backPetalRotation: 0.50,
@@ -95,6 +103,7 @@ const presets = {
   dense: {
     points: 4200, angle: GOLDEN_ANGLE, lockGolden: true, framing: 0.90, radiusPower: 0.50,
     seedProfile: "outerFlare", size: 2.0, sizeCurve: 1.10, shape: "circle", stretch: 1.4,
+    headDepthEnabled: true, headDepthStrength: 0.28, headLightAngle: -45, headCentreShadow: 0.24,
     showPetals: false, petalType: "classic", petalCount: 34, petalLength: 90, petalWidth: 26,
     petalOffset: 10, petalOpacity: 0.95, headRimEnabled: false, headRimWidth: 22, headRimOpacity: 0.32, showBackPetals: false, backPetalLength: 120,
     backPetalWidth: 32, backPetalOffset: 24, backPetalOpacity: 0.72, backPetalRotation: 0.50,
@@ -103,6 +112,7 @@ const presets = {
   minimal: {
     points: 700, angle: GOLDEN_ANGLE, lockGolden: true, framing: 0.78, radiusPower: 0.50,
     seedProfile: "even", size: 4.6, sizeCurve: 0.35, shape: "circle", stretch: 1.4,
+    headDepthEnabled: false, headDepthStrength: 0.22, headLightAngle: -45, headCentreShadow: 0.12,
     showPetals: false, petalType: "classic", petalCount: 34, petalLength: 90, petalWidth: 26,
     petalOffset: 10, petalOpacity: 0.95, headRimEnabled: false, headRimWidth: 22, headRimOpacity: 0.32, showBackPetals: false, backPetalLength: 120,
     backPetalWidth: 32, backPetalOffset: 24, backPetalOpacity: 0.72, backPetalRotation: 0.50,
@@ -111,6 +121,7 @@ const presets = {
   study: {
     points: 1600, angle: GOLDEN_ANGLE, lockGolden: true, framing: 0.82, radiusPower: 0.50,
     seedProfile: "even", size: 2.2, sizeCurve: 0.0, shape: "circle", stretch: 1.0,
+    headDepthEnabled: false, headDepthStrength: 0.20, headLightAngle: -45, headCentreShadow: 0.10,
     showPetals: false, petalType: "classic", petalCount: 34, petalLength: 90, petalWidth: 26,
     petalOffset: 10, petalOpacity: 0.95, headRimEnabled: false, headRimWidth: 22, headRimOpacity: 0.32, showBackPetals: false, backPetalLength: 120,
     backPetalWidth: 32, backPetalOffset: 24, backPetalOpacity: 0.72, backPetalRotation: 0.50,
@@ -119,6 +130,7 @@ const presets = {
   amber: {
     points: 2000, angle: GOLDEN_ANGLE, lockGolden: true, framing: 0.84, radiusPower: 0.50,
     seedProfile: "outerFlare", size: 2.7, sizeCurve: 0.75, shape: "ellipse", stretch: 1.55,
+    headDepthEnabled: true, headDepthStrength: 0.42, headLightAngle: -45, headCentreShadow: 0.34,
     showPetals: true, petalType: "rounded", petalCount: 34, petalLength: 100, petalWidth: 28,
     petalOffset: 4, petalOpacity: 0.95, headRimEnabled: true, headRimWidth: 26, headRimOpacity: 0.36, showBackPetals: true, backPetalLength: 130,
     backPetalWidth: 34, backPetalOffset: 28, backPetalOpacity: 0.70, backPetalRotation: 0.50,
@@ -127,6 +139,7 @@ const presets = {
   mono: {
     points: 1800, angle: GOLDEN_ANGLE, lockGolden: true, framing: 0.84, radiusPower: 0.50,
     seedProfile: "natural", size: 2.3, sizeCurve: 0.55, shape: "circle", stretch: 1.0,
+    headDepthEnabled: true, headDepthStrength: 0.26, headLightAngle: -45, headCentreShadow: 0.20,
     showPetals: false, petalType: "classic", petalCount: 34, petalLength: 90, petalWidth: 26,
     petalOffset: 10, petalOpacity: 0.95, headRimEnabled: false, headRimWidth: 22, headRimOpacity: 0.32, showBackPetals: false, backPetalLength: 120,
     backPetalWidth: 32, backPetalOffset: 24, backPetalOpacity: 0.72, backPetalRotation: 0.50,
@@ -224,6 +237,10 @@ function getSettings() {
     stretch: parseFloat(controls.stretch.value),
     seedRadiusJitter: parseFloat(controls.seedRadiusJitter.value),
     seedOpacityJitter: parseFloat(controls.seedOpacityJitter.value),
+    headDepthEnabled: controls.headDepthEnabled.checked,
+    headDepthStrength: parseFloat(controls.headDepthStrength.value),
+    headLightAngle: parseFloat(controls.headLightAngle.value),
+    headCentreShadow: parseFloat(controls.headCentreShadow.value),
     showPetals: controls.showPetals.checked,
     petalType: controls.petalType.value,
     petalCount: parseInt(controls.petalCount.value, 10),
@@ -283,6 +300,9 @@ function updateLabels() {
   valueLabels.stretch.textContent = s.stretch.toFixed(2);
   valueLabels.seedRadiusJitter.textContent = s.seedRadiusJitter.toFixed(2);
   valueLabels.seedOpacityJitter.textContent = s.seedOpacityJitter.toFixed(2);
+  valueLabels.headDepthStrength.textContent = s.headDepthStrength.toFixed(2);
+  valueLabels.headLightAngle.textContent = s.headLightAngle.toFixed(0);
+  valueLabels.headCentreShadow.textContent = s.headCentreShadow.toFixed(2);
   valueLabels.petalCount.textContent = s.petalCount;
   valueLabels.petalLength.textContent = s.petalLength.toFixed(0);
   valueLabels.petalWidth.textContent = s.petalWidth.toFixed(0);
@@ -369,7 +389,8 @@ function computePoints(settings, width, height) {
     const jitterR = 1 + ((seededRandom(i * 17.31) * 2 - 1) * settings.seedRadiusJitter);
     const jitterA = clamp(1 - seededRandom(i * 13.73) * settings.seedOpacityJitter, 0.05, 1);
 
-    points.push({ x, y, theta, t, radius, color, jitterR, jitterA });
+    const radialN = clamp(r / targetRadius, 0, 1);
+    points.push({ x, y, theta, t, radialN, radius, color, jitterR, jitterA });
   }
 
   return { points, cx, cy, targetRadius };
@@ -380,6 +401,30 @@ function computePoints(settings, width, height) {
 // fixed offset (upper-left light source → shadow falls lower-right) in a
 // dark semi-transparent colour.  The shadow alpha is scaled by jitterA so
 // bolder seeds cast stronger shadows, maintaining internal consistency.
+
+function adjustBrightness(color, factor) {
+  return {
+    r: clamp(Math.round(color.r * factor), 0, 255),
+    g: clamp(Math.round(color.g * factor), 0, 255),
+    b: clamp(Math.round(color.b * factor), 0, 255),
+  };
+}
+
+function getSeedHeadLightFactor(point, settings) {
+  if (!settings.headDepthEnabled || settings.headDepthStrength <= 0) return 1;
+
+  // Treat the seed head as a shallow dome. The centre sits darker/deeper,
+  // the upper-left catches a little light, and the lower/right edge falls away.
+  const lightAngle = settings.headLightAngle * Math.PI / 180;
+  const lx = Math.cos(lightAngle);
+  const ly = Math.sin(lightAngle);
+  const nx = Math.cos(point.theta);
+  const ny = Math.sin(point.theta);
+  const directional = (nx * lx + ny * ly) * settings.headDepthStrength * 0.28 * (0.25 + point.radialN * 0.75);
+  const centreCup = Math.pow(1 - point.radialN, 2.25) * settings.headCentreShadow;
+  const edgeFalloff = Math.pow(point.radialN, 2.8) * settings.headDepthStrength * 0.10;
+  return clamp(1 + directional - centreCup - edgeFalloff, 0.28, 1.45);
+}
 
 function drawSeed(ctx, point, settings) {
   const r = point.radius * point.jitterR;
@@ -409,8 +454,10 @@ function drawSeed(ctx, point, settings) {
     }
   }
 
-  // Main element — uses jittered radius and opacity
-  ctx.fillStyle = rgbString(point.color, point.jitterA);
+  // Main element — uses jittered radius, opacity, and optional dome lighting.
+  const lightFactor = getSeedHeadLightFactor(point, settings);
+  const litColor = adjustBrightness(point.color, lightFactor);
+  ctx.fillStyle = rgbString(litColor, point.jitterA);
 
   if (settings.shape === "square") {
     const side = r * 2;
@@ -596,8 +643,8 @@ function drawHeadRim(ctx, settings, width, height) {
   const targetRadius = Math.min(width, height) * 0.5 * settings.framing * settings.compositionScale;
   const rimWidth = settings.headRimWidth;
 
-  const innerRadius = Math.max(0, targetRadius - rimWidth * 1.9);
-  const outerRadius = targetRadius + rimWidth * 1.75;
+  const innerRadius = Math.max(0, targetRadius - rimWidth * 0.9);
+  const outerRadius = targetRadius + rimWidth * 0.75;
 
   const dark = samplePalette(settings.palette, 0.08, settings.contrast);
   const warm = samplePalette(settings.palette, 0.26, settings.contrast);
@@ -713,6 +760,10 @@ function applyPreset(name) {
   controls.stretch.value = preset.stretch;
   controls.seedRadiusJitter.value = preset.seedRadiusJitter ?? 0.12;
   controls.seedOpacityJitter.value = preset.seedOpacityJitter ?? 0.10;
+  controls.headDepthEnabled.checked = preset.headDepthEnabled ?? true;
+  controls.headDepthStrength.value = preset.headDepthStrength ?? 0.34;
+  controls.headLightAngle.value = preset.headLightAngle ?? -45;
+  controls.headCentreShadow.value = preset.headCentreShadow ?? 0.30;
   controls.showPetals.checked = preset.showPetals;
   controls.petalType.value = preset.petalType || "classic";
   controls.petalCount.value = preset.petalCount;
