@@ -34,6 +34,11 @@ const controls = {
   petalWidth: document.getElementById("petalWidth"),
   petalOffset: document.getElementById("petalOffset"),
   petalOpacity: document.getElementById("petalOpacity"),
+  petalLengthJitter: document.getElementById("petalLengthJitter"),
+  petalWidthJitter: document.getElementById("petalWidthJitter"),
+  petalAngleJitter: document.getElementById("petalAngleJitter"),
+  petalRadialJitter: document.getElementById("petalRadialJitter"),
+  petalOpacityJitter: document.getElementById("petalOpacityJitter"),
   headRimEnabled: document.getElementById("headRimEnabled"),
   headRimWidth: document.getElementById("headRimWidth"),
   headRimOpacity: document.getElementById("headRimOpacity"),
@@ -77,6 +82,11 @@ const valueLabels = {
   petalWidth: document.getElementById("petalWidthVal"),
   petalOffset: document.getElementById("petalOffsetVal"),
   petalOpacity: document.getElementById("petalOpacityVal"),
+  petalLengthJitter: document.getElementById("petalLengthJitterVal"),
+  petalWidthJitter: document.getElementById("petalWidthJitterVal"),
+  petalAngleJitter: document.getElementById("petalAngleJitterVal"),
+  petalRadialJitter: document.getElementById("petalRadialJitterVal"),
+  petalOpacityJitter: document.getElementById("petalOpacityJitterVal"),
   headRimWidth: document.getElementById("headRimWidthVal"),
   headRimOpacity: document.getElementById("headRimOpacityVal"),
   backPetalLength: document.getElementById("backPetalLengthVal"),
@@ -96,7 +106,7 @@ const presets = {
     seedProfile: "natural", size: 2.4, sizeCurve: 0.55, shape: "ellipse", stretch: 1.45,
     headDepthEnabled: true, headDepthStrength: 0.78, headLightAngle: -45, headCentreShadow: 0.62,
     showPetals: true, petalType: "classic", petalCount: 34, petalLength: 90, petalWidth: 26,
-    petalOffset: 2, petalOpacity: 0.95, headRimEnabled: true, headRimWidth: 24, headRimOpacity: 0.38, showBackPetals: true, backPetalLength: 120,
+    petalOffset: 2, petalOpacity: 0.95, petalLengthJitter: 0.22, petalWidthJitter: 0.12, petalAngleJitter: 4.5, petalRadialJitter: 5, petalOpacityJitter: 0.10, headRimEnabled: true, headRimWidth: 24, headRimOpacity: 0.38, showBackPetals: true, backPetalLength: 120,
     backPetalWidth: 32, backPetalOffset: 24, backPetalOpacity: 0.72, backPetalRotation: 0.50,
     palette: "sunflower", background: "black", contrast: 1.00,
   },
@@ -105,7 +115,7 @@ const presets = {
     seedProfile: "outerFlare", size: 2.0, sizeCurve: 1.10, shape: "circle", stretch: 1.4,
     headDepthEnabled: true, headDepthStrength: 0.64, headLightAngle: -45, headCentreShadow: 0.50,
     showPetals: false, petalType: "classic", petalCount: 34, petalLength: 90, petalWidth: 26,
-    petalOffset: 10, petalOpacity: 0.95, headRimEnabled: false, headRimWidth: 22, headRimOpacity: 0.32, showBackPetals: false, backPetalLength: 120,
+    petalOffset: 10, petalOpacity: 0.95, petalLengthJitter: 0.18, petalWidthJitter: 0.10, petalAngleJitter: 3.5, petalRadialJitter: 4, petalOpacityJitter: 0.08, headRimEnabled: false, headRimWidth: 22, headRimOpacity: 0.32, showBackPetals: false, backPetalLength: 120,
     backPetalWidth: 32, backPetalOffset: 24, backPetalOpacity: 0.72, backPetalRotation: 0.50,
     palette: "amber", background: "black", contrast: 1.15,
   },
@@ -114,7 +124,7 @@ const presets = {
     seedProfile: "even", size: 4.6, sizeCurve: 0.35, shape: "circle", stretch: 1.4,
     headDepthEnabled: false, headDepthStrength: 0.22, headLightAngle: -45, headCentreShadow: 0.12,
     showPetals: false, petalType: "classic", petalCount: 34, petalLength: 90, petalWidth: 26,
-    petalOffset: 10, petalOpacity: 0.95, headRimEnabled: false, headRimWidth: 22, headRimOpacity: 0.32, showBackPetals: false, backPetalLength: 120,
+    petalOffset: 10, petalOpacity: 0.95, petalLengthJitter: 0.18, petalWidthJitter: 0.10, petalAngleJitter: 3.5, petalRadialJitter: 4, petalOpacityJitter: 0.08, headRimEnabled: false, headRimWidth: 22, headRimOpacity: 0.32, showBackPetals: false, backPetalLength: 120,
     backPetalWidth: 32, backPetalOffset: 24, backPetalOpacity: 0.72, backPetalRotation: 0.50,
     palette: "bone", background: "paper", contrast: 0.90,
   },
@@ -123,7 +133,7 @@ const presets = {
     seedProfile: "even", size: 2.2, sizeCurve: 0.0, shape: "circle", stretch: 1.0,
     headDepthEnabled: false, headDepthStrength: 0.20, headLightAngle: -45, headCentreShadow: 0.10,
     showPetals: false, petalType: "classic", petalCount: 34, petalLength: 90, petalWidth: 26,
-    petalOffset: 10, petalOpacity: 0.95, headRimEnabled: false, headRimWidth: 22, headRimOpacity: 0.32, showBackPetals: false, backPetalLength: 120,
+    petalOffset: 10, petalOpacity: 0.95, petalLengthJitter: 0.18, petalWidthJitter: 0.10, petalAngleJitter: 3.5, petalRadialJitter: 4, petalOpacityJitter: 0.08, headRimEnabled: false, headRimWidth: 22, headRimOpacity: 0.32, showBackPetals: false, backPetalLength: 120,
     backPetalWidth: 32, backPetalOffset: 24, backPetalOpacity: 0.72, backPetalRotation: 0.50,
     palette: "charcoal", background: "paper", contrast: 1.00,
   },
@@ -132,7 +142,7 @@ const presets = {
     seedProfile: "outerFlare", size: 2.7, sizeCurve: 0.75, shape: "ellipse", stretch: 1.55,
     headDepthEnabled: true, headDepthStrength: 0.82, headLightAngle: -45, headCentreShadow: 0.56,
     showPetals: true, petalType: "rounded", petalCount: 34, petalLength: 100, petalWidth: 28,
-    petalOffset: 4, petalOpacity: 0.95, headRimEnabled: true, headRimWidth: 26, headRimOpacity: 0.36, showBackPetals: true, backPetalLength: 130,
+    petalOffset: 4, petalOpacity: 0.95, petalLengthJitter: 0.24, petalWidthJitter: 0.14, petalAngleJitter: 5.0, petalRadialJitter: 6, petalOpacityJitter: 0.12, headRimEnabled: true, headRimWidth: 26, headRimOpacity: 0.36, showBackPetals: true, backPetalLength: 130,
     backPetalWidth: 34, backPetalOffset: 28, backPetalOpacity: 0.70, backPetalRotation: 0.50,
     palette: "amber", background: "black", contrast: 1.20,
   },
@@ -141,7 +151,7 @@ const presets = {
     seedProfile: "natural", size: 2.3, sizeCurve: 0.55, shape: "circle", stretch: 1.0,
     headDepthEnabled: true, headDepthStrength: 0.58, headLightAngle: -45, headCentreShadow: 0.42,
     showPetals: false, petalType: "classic", petalCount: 34, petalLength: 90, petalWidth: 26,
-    petalOffset: 10, petalOpacity: 0.95, headRimEnabled: false, headRimWidth: 22, headRimOpacity: 0.32, showBackPetals: false, backPetalLength: 120,
+    petalOffset: 10, petalOpacity: 0.95, petalLengthJitter: 0.18, petalWidthJitter: 0.10, petalAngleJitter: 3.5, petalRadialJitter: 4, petalOpacityJitter: 0.08, headRimEnabled: false, headRimWidth: 22, headRimOpacity: 0.32, showBackPetals: false, backPetalLength: 120,
     backPetalWidth: 32, backPetalOffset: 24, backPetalOpacity: 0.72, backPetalRotation: 0.50,
     palette: "mono", background: "black", contrast: 1.00,
   }
@@ -248,6 +258,11 @@ function getSettings() {
     petalWidth: parseFloat(controls.petalWidth.value),
     petalOffset: parseFloat(controls.petalOffset.value),
     petalOpacity: parseFloat(controls.petalOpacity.value),
+    petalLengthJitter: parseFloat(controls.petalLengthJitter.value),
+    petalWidthJitter: parseFloat(controls.petalWidthJitter.value),
+    petalAngleJitter: parseFloat(controls.petalAngleJitter.value),
+    petalRadialJitter: parseFloat(controls.petalRadialJitter.value),
+    petalOpacityJitter: parseFloat(controls.petalOpacityJitter.value),
     headRimEnabled: controls.headRimEnabled.checked,
     headRimWidth: parseFloat(controls.headRimWidth.value),
     headRimOpacity: parseFloat(controls.headRimOpacity.value),
@@ -308,6 +323,11 @@ function updateLabels() {
   valueLabels.petalWidth.textContent = s.petalWidth.toFixed(0);
   valueLabels.petalOffset.textContent = s.petalOffset.toFixed(0);
   valueLabels.petalOpacity.textContent = s.petalOpacity.toFixed(2);
+  valueLabels.petalLengthJitter.textContent = s.petalLengthJitter.toFixed(2);
+  valueLabels.petalWidthJitter.textContent = s.petalWidthJitter.toFixed(2);
+  valueLabels.petalAngleJitter.textContent = s.petalAngleJitter.toFixed(1);
+  valueLabels.petalRadialJitter.textContent = s.petalRadialJitter.toFixed(0);
+  valueLabels.petalOpacityJitter.textContent = s.petalOpacityJitter.toFixed(2);
   valueLabels.headRimWidth.textContent = s.headRimWidth.toFixed(0);
   valueLabels.headRimOpacity.textContent = s.headRimOpacity.toFixed(2);
   valueLabels.backPetalLength.textContent = s.backPetalLength.toFixed(0);
@@ -535,22 +555,42 @@ function drawPetalRing(ctx, options) {
   const {
     cx, cy, baseRadius, count, length, width, opacity,
     rotationOffset = 0, colors, petalType = "classic", isBackRing = false,
+    petalLengthJitter = 0, petalWidthJitter = 0, petalAngleJitter = 0,
+    petalRadialJitter = 0, petalOpacityJitter = 0,
     shadowEnabled = true, shadowOffsetX = 2, shadowOffsetY = 2, shadowOpacity = 0.08
   } = options;
 
-  const dims = getPetalDimensions(petalType, length, width, isBackRing);
+  const baseDims = getPetalDimensions(petalType, length, width, isBackRing);
+  const ringSeed = isBackRing ? 971.17 : 431.89;
 
   for (let i = 0; i < count; i++) {
-    const theta = ((i + rotationOffset) / count) * Math.PI * 2;
-    const x = cx + baseRadius * Math.cos(theta);
-    const y = cy + baseRadius * Math.sin(theta);
+    const thetaBase = ((i + rotationOffset) / count) * Math.PI * 2;
+
+    // Deterministic petal variation. Each petal keeps its identity between redraws,
+    // so the ring feels grown rather than animated/noisy. The back ring uses a
+    // different seed so it does not clone the front ring exactly.
+    const lengthMul = 1 + ((seededRandom(ringSeed + i * 19.13) * 2 - 1) * petalLengthJitter);
+    const widthMul = 1 + ((seededRandom(ringSeed + i * 23.71) * 2 - 1) * petalWidthJitter);
+    const angleOffset = (seededRandom(ringSeed + i * 29.37) * 2 - 1) * petalAngleJitter * Math.PI / 180;
+    const radialOffset = (seededRandom(ringSeed + i * 31.91) * 2 - 1) * petalRadialJitter;
+    const opacityMul = 1 + ((seededRandom(ringSeed + i * 37.43) * 2 - 1) * petalOpacityJitter);
+
+    const dims = {
+      length: Math.max(1, baseDims.length * lengthMul),
+      width: Math.max(1, baseDims.width * widthMul),
+    };
+    const theta = thetaBase + angleOffset;
+    const petalRadius = baseRadius + radialOffset;
+    const petalOpacity = clamp(opacity * opacityMul, 0.03, 1);
+    const x = cx + petalRadius * Math.cos(thetaBase);
+    const y = cy + petalRadius * Math.sin(thetaBase);
 
     // ── Shadow pass ──────────────────────────────────────────────────────────
     if (shadowEnabled && shadowOpacity > 0) {
       ctx.save();
       ctx.translate(x + shadowOffsetX, y + shadowOffsetY);
       ctx.rotate(theta + Math.PI / 2);
-      ctx.fillStyle = `rgba(0, 0, 0, ${Math.min(opacity * shadowOpacity, 0.35)})`;
+      ctx.fillStyle = `rgba(0, 0, 0, ${Math.min(petalOpacity * shadowOpacity, 0.35)})`;
       drawPetalPath(ctx, petalType, dims.length, dims.width);
       ctx.fill();
       ctx.restore();
@@ -562,9 +602,9 @@ function drawPetalRing(ctx, options) {
     ctx.rotate(theta + Math.PI / 2);
 
     const grad = ctx.createLinearGradient(0, -dims.length * 0.5, 0, dims.length * 0.5);
-    grad.addColorStop(0,    `rgba(${colors[0][0]}, ${colors[0][1]}, ${colors[0][2]}, ${opacity})`);
-    grad.addColorStop(0.55, `rgba(${colors[1][0]}, ${colors[1][1]}, ${colors[1][2]}, ${opacity})`);
-    grad.addColorStop(1,    `rgba(${colors[2][0]}, ${colors[2][1]}, ${colors[2][2]}, ${opacity * 0.92})`);
+    grad.addColorStop(0,    `rgba(${colors[0][0]}, ${colors[0][1]}, ${colors[0][2]}, ${petalOpacity})`);
+    grad.addColorStop(0.55, `rgba(${colors[1][0]}, ${colors[1][1]}, ${colors[1][2]}, ${petalOpacity})`);
+    grad.addColorStop(1,    `rgba(${colors[2][0]}, ${colors[2][1]}, ${colors[2][2]}, ${petalOpacity * 0.92})`);
 
     ctx.fillStyle = grad;
     drawPetalPath(ctx, petalType, dims.length, dims.width);
@@ -602,6 +642,11 @@ function drawPetals(ctx, settings, width, height) {
       colors: [backTop, backMid, backBase],
       petalType: settings.petalType,
       isBackRing: true,
+      petalLengthJitter: settings.petalLengthJitter,
+      petalWidthJitter: settings.petalWidthJitter,
+      petalAngleJitter: settings.petalAngleJitter,
+      petalRadialJitter: settings.petalRadialJitter,
+      petalOpacityJitter: settings.petalOpacityJitter,
       shadowEnabled: settings.shadowEnabled,
       shadowOffsetX: settings.shadowOffsetX,
       shadowOffsetY: settings.shadowOffsetY,
@@ -625,6 +670,11 @@ function drawPetals(ctx, settings, width, height) {
       ],
       petalType: settings.petalType,
       isBackRing: false,
+      petalLengthJitter: settings.petalLengthJitter,
+      petalWidthJitter: settings.petalWidthJitter,
+      petalAngleJitter: settings.petalAngleJitter,
+      petalRadialJitter: settings.petalRadialJitter,
+      petalOpacityJitter: settings.petalOpacityJitter,
       shadowEnabled: settings.shadowEnabled,
       shadowOffsetX: settings.shadowOffsetX,
       shadowOffsetY: settings.shadowOffsetY,
@@ -841,6 +891,11 @@ function applyPreset(name) {
   controls.petalWidth.value = preset.petalWidth;
   controls.petalOffset.value = preset.petalOffset;
   controls.petalOpacity.value = preset.petalOpacity;
+  controls.petalLengthJitter.value = preset.petalLengthJitter ?? 0.18;
+  controls.petalWidthJitter.value = preset.petalWidthJitter ?? 0.10;
+  controls.petalAngleJitter.value = preset.petalAngleJitter ?? 3.5;
+  controls.petalRadialJitter.value = preset.petalRadialJitter ?? 4;
+  controls.petalOpacityJitter.value = preset.petalOpacityJitter ?? 0.08;
   controls.headRimEnabled.checked = preset.headRimEnabled ?? preset.showPetals;
   controls.headRimWidth.value = preset.headRimWidth ?? 24;
   controls.headRimOpacity.value = preset.headRimOpacity ?? 0.38;
