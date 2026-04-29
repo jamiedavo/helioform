@@ -94,7 +94,7 @@ const presets = {
   sunflower: {
     points: 1800, angle: GOLDEN_ANGLE, lockGolden: true, framing: 0.78, radiusPower: 0.50,
     seedProfile: "natural", size: 2.4, sizeCurve: 0.55, shape: "ellipse", stretch: 1.45,
-    headDepthEnabled: true, headDepthStrength: 0.36, headLightAngle: -45, headCentreShadow: 0.38,
+    headDepthEnabled: true, headDepthStrength: 0.78, headLightAngle: -45, headCentreShadow: 0.62,
     showPetals: true, petalType: "classic", petalCount: 34, petalLength: 90, petalWidth: 26,
     petalOffset: 2, petalOpacity: 0.95, headRimEnabled: true, headRimWidth: 24, headRimOpacity: 0.38, showBackPetals: true, backPetalLength: 120,
     backPetalWidth: 32, backPetalOffset: 24, backPetalOpacity: 0.72, backPetalRotation: 0.50,
@@ -103,7 +103,7 @@ const presets = {
   dense: {
     points: 4200, angle: GOLDEN_ANGLE, lockGolden: true, framing: 0.90, radiusPower: 0.50,
     seedProfile: "outerFlare", size: 2.0, sizeCurve: 1.10, shape: "circle", stretch: 1.4,
-    headDepthEnabled: true, headDepthStrength: 0.28, headLightAngle: -45, headCentreShadow: 0.24,
+    headDepthEnabled: true, headDepthStrength: 0.64, headLightAngle: -45, headCentreShadow: 0.50,
     showPetals: false, petalType: "classic", petalCount: 34, petalLength: 90, petalWidth: 26,
     petalOffset: 10, petalOpacity: 0.95, headRimEnabled: false, headRimWidth: 22, headRimOpacity: 0.32, showBackPetals: false, backPetalLength: 120,
     backPetalWidth: 32, backPetalOffset: 24, backPetalOpacity: 0.72, backPetalRotation: 0.50,
@@ -130,7 +130,7 @@ const presets = {
   amber: {
     points: 2000, angle: GOLDEN_ANGLE, lockGolden: true, framing: 0.84, radiusPower: 0.50,
     seedProfile: "outerFlare", size: 2.7, sizeCurve: 0.75, shape: "ellipse", stretch: 1.55,
-    headDepthEnabled: true, headDepthStrength: 0.42, headLightAngle: -45, headCentreShadow: 0.34,
+    headDepthEnabled: true, headDepthStrength: 0.82, headLightAngle: -45, headCentreShadow: 0.56,
     showPetals: true, petalType: "rounded", petalCount: 34, petalLength: 100, petalWidth: 28,
     petalOffset: 4, petalOpacity: 0.95, headRimEnabled: true, headRimWidth: 26, headRimOpacity: 0.36, showBackPetals: true, backPetalLength: 130,
     backPetalWidth: 34, backPetalOffset: 28, backPetalOpacity: 0.70, backPetalRotation: 0.50,
@@ -139,7 +139,7 @@ const presets = {
   mono: {
     points: 1800, angle: GOLDEN_ANGLE, lockGolden: true, framing: 0.84, radiusPower: 0.50,
     seedProfile: "natural", size: 2.3, sizeCurve: 0.55, shape: "circle", stretch: 1.0,
-    headDepthEnabled: true, headDepthStrength: 0.26, headLightAngle: -45, headCentreShadow: 0.20,
+    headDepthEnabled: true, headDepthStrength: 0.58, headLightAngle: -45, headCentreShadow: 0.42,
     showPetals: false, petalType: "classic", petalCount: 34, petalLength: 90, petalWidth: 26,
     petalOffset: 10, petalOpacity: 0.95, headRimEnabled: false, headRimWidth: 22, headRimOpacity: 0.32, showBackPetals: false, backPetalLength: 120,
     backPetalWidth: 32, backPetalOffset: 24, backPetalOpacity: 0.72, backPetalRotation: 0.50,
@@ -413,17 +413,20 @@ function adjustBrightness(color, factor) {
 function getSeedHeadLightFactor(point, settings) {
   if (!settings.headDepthEnabled || settings.headDepthStrength <= 0) return 1;
 
-  // Treat the seed head as a shallow dome. The centre sits darker/deeper,
-  // the upper-left catches a little light, and the lower/right edge falls away.
+  // Strong sculptural shading. This is intentionally more visible than the first
+  // conservative pass: one side lifts, the opposite side rolls away, and the
+  // centre cups down so the seed pod reads as a physical form rather than a flat map.
   const lightAngle = settings.headLightAngle * Math.PI / 180;
   const lx = Math.cos(lightAngle);
   const ly = Math.sin(lightAngle);
   const nx = Math.cos(point.theta);
   const ny = Math.sin(point.theta);
-  const directional = (nx * lx + ny * ly) * settings.headDepthStrength * 0.28 * (0.25 + point.radialN * 0.75);
-  const centreCup = Math.pow(1 - point.radialN, 2.25) * settings.headCentreShadow;
-  const edgeFalloff = Math.pow(point.radialN, 2.8) * settings.headDepthStrength * 0.90;
-  return clamp(1 + directional - centreCup - edgeFalloff, 0.28, 1.45);
+  const facingLight = nx * lx + ny * ly;
+  const highlight = Math.max(0, facingLight) * settings.headDepthStrength * 0.58 * (0.18 + point.radialN * 0.82);
+  const castShadow = Math.max(0, -facingLight) * settings.headDepthStrength * 0.42 * (0.25 + point.radialN * 0.75);
+  const centreCup = Math.pow(1 - point.radialN, 1.65) * settings.headCentreShadow * 0.92;
+  const edgeFalloff = Math.pow(point.radialN, 3.2) * settings.headDepthStrength * 0.26;
+  return clamp(1 + highlight - castShadow - centreCup - edgeFalloff, 0.16, 1.85);
 }
 
 function drawSeed(ctx, point, settings) {
@@ -635,6 +638,72 @@ function drawPetals(ctx, settings, width, height) {
 // Visual integration layer between the seed head and the petal bases.
 // Petals remain underneath the disc, but this soft rim hides the mechanical join
 // and makes them feel tucked into a physical sunflower head.
+function drawSeedHeadDepthOverlay(ctx, settings, width, height) {
+  if (!settings.headDepthEnabled || settings.headDepthStrength <= 0) return;
+
+  const cx = width * settings.originX;
+  const cy = height * settings.originY;
+  const targetRadius = Math.min(width, height) * 0.5 * settings.framing * settings.compositionScale;
+  const radius = targetRadius + Math.max(settings.size * 3, 6);
+  const lightAngle = settings.headLightAngle * Math.PI / 180;
+  const lx = Math.cos(lightAngle);
+  const ly = Math.sin(lightAngle);
+
+  ctx.save();
+  ctx.beginPath();
+  ctx.arc(cx, cy, radius, 0, Math.PI * 2);
+  ctx.clip();
+
+  // Deep central cup. Drawn after seeds so the effect is no longer invisible.
+  const cup = ctx.createRadialGradient(cx, cy, 0, cx, cy, radius * 0.74);
+  cup.addColorStop(0.00, `rgba(0, 0, 0, ${0.58 * settings.headCentreShadow})`);
+  cup.addColorStop(0.26, `rgba(0, 0, 0, ${0.38 * settings.headCentreShadow})`);
+  cup.addColorStop(0.58, `rgba(0, 0, 0, ${0.12 * settings.headCentreShadow})`);
+  cup.addColorStop(1.00, `rgba(0, 0, 0, 0)`);
+  ctx.fillStyle = cup;
+  ctx.beginPath();
+  ctx.arc(cx, cy, radius, 0, Math.PI * 2);
+  ctx.fill();
+
+  // Lit crescent. This gives a plainly visible dome direction, not just per-seed tint.
+  const hx = cx + lx * radius * 0.36;
+  const hy = cy + ly * radius * 0.36;
+  const highlight = ctx.createRadialGradient(hx, hy, 0, hx, hy, radius * 0.88);
+  highlight.addColorStop(0.00, `rgba(255, 205, 88, ${0.22 * settings.headDepthStrength})`);
+  highlight.addColorStop(0.34, `rgba(255, 177, 45, ${0.12 * settings.headDepthStrength})`);
+  highlight.addColorStop(1.00, `rgba(255, 177, 45, 0)`);
+  ctx.globalCompositeOperation = "screen";
+  ctx.fillStyle = highlight;
+  ctx.beginPath();
+  ctx.arc(cx, cy, radius, 0, Math.PI * 2);
+  ctx.fill();
+
+  // Opposite-side rolloff. This makes the seed pod look like it turns away.
+  const sx = cx - lx * radius * 0.46;
+  const sy = cy - ly * radius * 0.46;
+  const rolloff = ctx.createRadialGradient(sx, sy, 0, sx, sy, radius * 0.95);
+  rolloff.addColorStop(0.00, `rgba(0, 0, 0, ${0.30 * settings.headDepthStrength})`);
+  rolloff.addColorStop(0.48, `rgba(0, 0, 0, ${0.16 * settings.headDepthStrength})`);
+  rolloff.addColorStop(1.00, `rgba(0, 0, 0, 0)`);
+  ctx.globalCompositeOperation = "source-over";
+  ctx.fillStyle = rolloff;
+  ctx.beginPath();
+  ctx.arc(cx, cy, radius, 0, Math.PI * 2);
+  ctx.fill();
+
+  // Outer edge occlusion: the head now sits over the petal bases with weight.
+  const edge = ctx.createRadialGradient(cx, cy, radius * 0.62, cx, cy, radius);
+  edge.addColorStop(0.00, "rgba(0, 0, 0, 0)");
+  edge.addColorStop(0.72, `rgba(0, 0, 0, ${0.12 * settings.headDepthStrength})`);
+  edge.addColorStop(1.00, `rgba(0, 0, 0, ${0.34 * settings.headDepthStrength})`);
+  ctx.fillStyle = edge;
+  ctx.beginPath();
+  ctx.arc(cx, cy, radius, 0, Math.PI * 2);
+  ctx.fill();
+
+  ctx.restore();
+}
+
 function drawHeadRim(ctx, settings, width, height) {
   if (!settings.headRimEnabled || settings.headRimOpacity <= 0 || settings.headRimWidth <= 0) return;
 
@@ -677,6 +746,7 @@ function renderToContext(ctx, width, height, settings) {
   drawHeadRim(ctx, settings, width, height);
   const { points } = computePoints(settings, width, height);
   for (const point of points) drawSeed(ctx, point, settings);
+  drawSeedHeadDepthOverlay(ctx, settings, width, height);
 }
 
 function drawPreview() {
@@ -761,9 +831,9 @@ function applyPreset(name) {
   controls.seedRadiusJitter.value = preset.seedRadiusJitter ?? 0.12;
   controls.seedOpacityJitter.value = preset.seedOpacityJitter ?? 0.10;
   controls.headDepthEnabled.checked = preset.headDepthEnabled ?? true;
-  controls.headDepthStrength.value = preset.headDepthStrength ?? 0.34;
+  controls.headDepthStrength.value = preset.headDepthStrength ?? 0.72;
   controls.headLightAngle.value = preset.headLightAngle ?? -45;
-  controls.headCentreShadow.value = preset.headCentreShadow ?? 0.30;
+  controls.headCentreShadow.value = preset.headCentreShadow ?? 0.56;
   controls.showPetals.checked = preset.showPetals;
   controls.petalType.value = preset.petalType || "classic";
   controls.petalCount.value = preset.petalCount;
