@@ -422,7 +422,7 @@ function getSeedHeadLightFactor(point, settings) {
   const ny = Math.sin(point.theta);
   const directional = (nx * lx + ny * ly) * settings.headDepthStrength * 0.28 * (0.25 + point.radialN * 0.75);
   const centreCup = Math.pow(1 - point.radialN, 2.25) * settings.headCentreShadow;
-  const edgeFalloff = Math.pow(point.radialN, 2.8) * settings.headDepthStrength * 0.10;
+  const edgeFalloff = Math.pow(point.radialN, 2.8) * settings.headDepthStrength * 0.90;
   return clamp(1 + directional - centreCup - edgeFalloff, 0.28, 1.45);
 }
 
