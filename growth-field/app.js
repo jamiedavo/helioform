@@ -429,7 +429,19 @@ function exportPNG() {
   }
   exportCanvas.width = width;
   exportCanvas.height = height;
-  renderToContext(exportCtx, width, height, settings);
+
+  // Export fidelity fix:
+  // Render in the same coordinate system as the live preview, then scale that
+  // complete drawing to the requested PNG size. This preserves line widths,
+  // offsets, wobble, and visual density exactly as the user sees them in the app.
+  const sourceWidth = canvas.width;
+  const sourceHeight = canvas.height;
+  exportCtx.imageSmoothingEnabled = true;
+  exportCtx.imageSmoothingQuality = "high";
+  exportCtx.save();
+  exportCtx.scale(width / sourceWidth, height / sourceHeight);
+  renderToContext(exportCtx, sourceWidth, sourceHeight, settings);
+  exportCtx.restore();
   exportCanvas.toBlob((blob) => {
     if (!blob) return;
     downloadBlob(blob, "growth-field.png");

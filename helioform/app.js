@@ -624,9 +624,21 @@ function exportPNG() {
   }
   exportCanvas.width = width;
   exportCanvas.height = height;
+
+  // Export fidelity fix:
+  // Render in the same coordinate system as the live preview, then scale that
+  // complete drawing to the requested PNG size. This preserves seed size, petal
+  // size, shadow offsets, line widths, and wobble exactly as the user sees them
+  // in the app. Re-rendering directly at 3000/6000px made fixed-pixel elements
+  // look tiny and caused downloads to lose the visual weight of the preview.
+  const sourceWidth = canvas.width;
+  const sourceHeight = canvas.height;
   exportCtx.imageSmoothingEnabled = true;
   exportCtx.imageSmoothingQuality = "high";
-  renderToContext(exportCtx, width, height, settings);
+  exportCtx.save();
+  exportCtx.scale(width / sourceWidth, height / sourceHeight);
+  renderToContext(exportCtx, sourceWidth, sourceHeight, settings);
+  exportCtx.restore();
   exportCanvas.toBlob((blob) => {
     if (!blob) return;
     downloadBlob(blob, "helioform.png");
