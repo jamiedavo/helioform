@@ -74,6 +74,42 @@
         Radius curve changes how tightly points accumulate toward the centre.
         0.50 is the classic square-root phyllotaxis.
       </div>
+
+      <label>
+        Origin X
+        <span class="value" id="originXVal">0.50</span>
+      </label>
+      <input type="range" id="originX" min="0.15" max="0.85" step="0.01" value="0.50" />
+
+      <label>
+        Origin Y
+        <span class="value" id="originYVal">0.50</span>
+      </label>
+      <input type="range" id="originY" min="0.15" max="0.85" step="0.01" value="0.50" />
+
+      <label>
+        Composition Scale
+        <span class="value" id="compositionScaleVal">1.00</span>
+      </label>
+      <input type="range" id="compositionScale" min="0.65" max="1.60" step="0.01" value="1.00" />
+
+      <label>
+        Organic Wobble
+        <span class="value" id="wobbleAmountVal">1.5</span>
+      </label>
+      <input type="range" id="wobbleAmount" min="0" max="8" step="0.1" value="1.5" />
+
+      <label>
+        Wobble Frequency
+        <span class="value" id="wobbleFrequencyVal">0.17</span>
+      </label>
+      <input type="range" id="wobbleFrequency" min="0.02" max="0.6" step="0.01" value="0.17" />
+
+      <label>
+        Wobble Falloff
+        <span class="value" id="wobbleFalloffVal">0.75</span>
+      </label>
+      <input type="range" id="wobbleFalloff" min="0" max="2" step="0.05" value="0.75" />
     </div>
 
     <div class="group">
@@ -116,6 +152,18 @@
         <span class="value" id="stretchVal">1.45</span>
       </label>
       <input type="range" id="stretch" min="1" max="3" step="0.05" value="1.45" />
+
+      <label>
+        Radius Jitter
+        <span class="value" id="seedRadiusJitterVal">0.12</span>
+      </label>
+      <input type="range" id="seedRadiusJitter" min="0" max="0.35" step="0.01" value="0.12" />
+
+      <label>
+        Opacity Jitter
+        <span class="value" id="seedOpacityJitterVal">0.10</span>
+      </label>
+      <input type="range" id="seedOpacityJitter" min="0" max="0.45" step="0.01" value="0.10" />
     </div>
 
     <div class="group">
@@ -241,6 +289,29 @@
         <span class="value" id="contrastVal">1.00</span>
       </label>
       <input type="range" id="contrast" min="0.5" max="1.8" step="0.05" value="1.00" />
+
+      <label class="checkbox">
+        <input type="checkbox" id="shadowEnabled" checked />
+        Shadow pass
+      </label>
+
+      <label>
+        Shadow X
+        <span class="value" id="shadowOffsetXVal">2.0</span>
+      </label>
+      <input type="range" id="shadowOffsetX" min="-8" max="8" step="0.5" value="2" />
+
+      <label>
+        Shadow Y
+        <span class="value" id="shadowOffsetYVal">2.0</span>
+      </label>
+      <input type="range" id="shadowOffsetY" min="-8" max="8" step="0.5" value="2" />
+
+      <label>
+        Shadow Opacity
+        <span class="value" id="shadowOpacityVal">0.08</span>
+      </label>
+      <input type="range" id="shadowOpacity" min="0" max="0.35" step="0.01" value="0.08" />
     </div>
 
     <div class="group">

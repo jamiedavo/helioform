@@ -10,12 +10,19 @@ const controls = {
   curl: document.getElementById("curl"),
   swirl: document.getElementById("swirl"),
   noise: document.getElementById("noise"),
+  stepWobble: document.getElementById("stepWobble"),
+  stepWobbleFrequency: document.getElementById("stepWobbleFrequency"),
   spread: document.getElementById("spread"),
   startJitter: document.getElementById("startJitter"),
   centerBias: document.getElementById("centerBias"),
+  originX: document.getElementById("originX"),
+  originY: document.getElementById("originY"),
   lineWidth: document.getElementById("lineWidth"),
   lineOpacity: document.getElementById("lineOpacity"),
   taper: document.getElementById("taper"),
+  veinTexture: document.getElementById("veinTexture"),
+  veinOffset: document.getElementById("veinOffset"),
+  veinOpacity: document.getElementById("veinOpacity"),
   palette: document.getElementById("palette"),
   background: document.getElementById("background"),
   contrast: document.getElementById("contrast"),
@@ -30,12 +37,18 @@ const valueLabels = {
   curl: document.getElementById("curlVal"),
   swirl: document.getElementById("swirlVal"),
   noise: document.getElementById("noiseVal"),
+  stepWobble: document.getElementById("stepWobbleVal"),
+  stepWobbleFrequency: document.getElementById("stepWobbleFrequencyVal"),
   spread: document.getElementById("spreadVal"),
   startJitter: document.getElementById("startJitterVal"),
   centerBias: document.getElementById("centerBiasVal"),
+  originX: document.getElementById("originXVal"),
+  originY: document.getElementById("originYVal"),
   lineWidth: document.getElementById("lineWidthVal"),
   lineOpacity: document.getElementById("lineOpacityVal"),
   taper: document.getElementById("taperVal"),
+  veinOffset: document.getElementById("veinOffsetVal"),
+  veinOpacity: document.getElementById("veinOpacityVal"),
   contrast: document.getElementById("contrastVal"),
 };
 
@@ -70,6 +83,16 @@ const presets = {
     noise: 0.7, spread: 1.0, startJitter: 0.3, centerBias: -0.1, lineWidth: 0.8,
     lineOpacity: 0.14, taper: 0.7, palette: "bone", background: "paper", contrast: 0.9
   }
+};
+
+const defaultControls = {
+  originX: 0.50,
+  originY: 0.50,
+  stepWobble: 0.7,
+  stepWobbleFrequency: 0.25,
+  veinTexture: true,
+  veinOffset: 0.8,
+  veinOpacity: 0.30,
 };
 
 // ─── Utilities ────────────────────────────────────────────────────────────────
@@ -147,12 +170,19 @@ function getSettings() {
     curl: parseFloat(controls.curl.value),
     swirl: parseFloat(controls.swirl.value),
     noise: parseFloat(controls.noise.value),
+    stepWobble: parseFloat(controls.stepWobble.value),
+    stepWobbleFrequency: parseFloat(controls.stepWobbleFrequency.value),
     spread: parseFloat(controls.spread.value),
     startJitter: parseFloat(controls.startJitter.value),
     centerBias: parseFloat(controls.centerBias.value),
+    originX: parseFloat(controls.originX.value),
+    originY: parseFloat(controls.originY.value),
     lineWidth: parseFloat(controls.lineWidth.value),
     lineOpacity: parseFloat(controls.lineOpacity.value),
     taper: parseFloat(controls.taper.value),
+    veinTexture: controls.veinTexture.checked,
+    veinOffset: parseFloat(controls.veinOffset.value),
+    veinOpacity: parseFloat(controls.veinOpacity.value),
     palette: controls.palette.value,
     background: controls.background.value,
     contrast: parseFloat(controls.contrast.value),
@@ -169,12 +199,18 @@ function updateLabels() {
   valueLabels.curl.textContent = s.curl.toFixed(2);
   valueLabels.swirl.textContent = s.swirl.toFixed(2);
   valueLabels.noise.textContent = s.noise.toFixed(2);
+  valueLabels.stepWobble.textContent = s.stepWobble.toFixed(2);
+  valueLabels.stepWobbleFrequency.textContent = s.stepWobbleFrequency.toFixed(2);
   valueLabels.spread.textContent = s.spread.toFixed(2);
   valueLabels.startJitter.textContent = s.startJitter.toFixed(2);
   valueLabels.centerBias.textContent = s.centerBias.toFixed(2);
+  valueLabels.originX.textContent = s.originX.toFixed(2);
+  valueLabels.originY.textContent = s.originY.toFixed(2);
   valueLabels.lineWidth.textContent = s.lineWidth.toFixed(2);
   valueLabels.lineOpacity.textContent = s.lineOpacity.toFixed(2);
   valueLabels.taper.textContent = s.taper.toFixed(2);
+  valueLabels.veinOffset.textContent = s.veinOffset.toFixed(2);
+  valueLabels.veinOpacity.textContent = s.veinOpacity.toFixed(2);
   valueLabels.contrast.textContent = s.contrast.toFixed(2);
 }
 
@@ -212,8 +248,8 @@ function fieldAngle(x, y, settings, width, height) {
   const ny = y * settings.fieldScale;
   const base = Math.sin(nx * (1.5 + settings.curl)) + Math.cos(ny * (1.2 + settings.curl * 0.5));
   const n = noise2D(nx * 2.7, ny * 2.2);
-  const cx = width / 2;
-  const cy = height / 2;
+  const cx = width * settings.originX;
+  const cy = height * settings.originY;
   const dx = x - cx;
   const dy = y - cy;
   const radial = Math.atan2(dy, dx) + Math.PI * 0.5;
@@ -223,8 +259,8 @@ function fieldAngle(x, y, settings, width, height) {
 
 function makeSeeds(settings, width, height) {
   const seeds = [];
-  const cx = width / 2;
-  const cy = height / 2;
+  const cx = width * settings.originX;
+  const cy = height * settings.originY;
   const radius = Math.min(width, height) * 0.5 * settings.spread;
   for (let i = 0; i < settings.seedCount; i++) {
     const a = randomFromSeed(i + 1) * Math.PI * 2;
@@ -261,8 +297,11 @@ function drawLine(seed, settings, width, height) {
 
   for (let i = 0; i < settings.steps; i++) {
     const angle = fieldAngle(x, y, settings, width, height);
-    x += Math.cos(angle) * settings.stepLength;
-    y += Math.sin(angle) * settings.stepLength;
+    const wobble = Math.sin(i * settings.stepWobbleFrequency + seed.t * Math.PI * 12)
+      * settings.stepWobble
+      * (1 - i / Math.max(settings.steps, 1));
+    x += Math.cos(angle) * settings.stepLength + -Math.sin(angle) * wobble;
+    y += Math.sin(angle) * settings.stepLength +  Math.cos(angle) * wobble;
     if (x < -40 || x > width + 40 || y < -40 || y > height + 40) break;
     path.push({ x, y });
   }
@@ -301,6 +340,27 @@ function drawLine(seed, settings, width, height) {
     ctx.lineTo(p1.x, p1.y);
     ctx.stroke();
   }
+
+  // Vein texture — a finer secondary stroke, offset perpendicular to each segment.
+  // This gives roots/veins a lit edge and makes overlaps feel more physical.
+  if (settings.veinTexture && settings.veinOpacity > 0) {
+    for (let i = 0; i < path.length - 1; i++) {
+      const p0 = path[i];
+      const p1 = path[i + 1];
+      const tt = i / Math.max(path.length - 2, 1);
+      const widthNow = jWidth * (1 - settings.taper * tt * 0.9);
+      const a = Math.atan2(p1.y - p0.y, p1.x - p0.x);
+      const ox = -Math.sin(a) * settings.veinOffset;
+      const oy =  Math.cos(a) * settings.veinOffset;
+
+      ctx.strokeStyle = rgbString(color, jOpacity * settings.veinOpacity);
+      ctx.lineWidth = Math.max(0.05, widthNow * 0.35);
+      ctx.beginPath();
+      ctx.moveTo(p0.x + ox, p0.y + oy);
+      ctx.lineTo(p1.x + ox, p1.y + oy);
+      ctx.stroke();
+    }
+  }
 }
 
 // ─── Render ───────────────────────────────────────────────────────────────────
@@ -328,8 +388,11 @@ function drawPreview() {
 function applyPreset(name) {
   const preset = presets[name];
   if (!preset) return;
-  Object.entries(preset).forEach(([key, value]) => {
-    if (controls[key]) controls[key].value = value;
+  const merged = { ...defaultControls, ...preset };
+  Object.entries(merged).forEach(([key, value]) => {
+    if (!controls[key]) return;
+    if (controls[key].type === "checkbox") controls[key].checked = Boolean(value);
+    else controls[key].value = value;
   });
   drawPreview();
 }

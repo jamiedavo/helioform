@@ -10,11 +10,19 @@ const controls = {
   lockGolden: document.getElementById("lockGolden"),
   framing: document.getElementById("framing"),
   radiusPower: document.getElementById("radiusPower"),
+  originX: document.getElementById("originX"),
+  originY: document.getElementById("originY"),
+  compositionScale: document.getElementById("compositionScale"),
+  wobbleAmount: document.getElementById("wobbleAmount"),
+  wobbleFrequency: document.getElementById("wobbleFrequency"),
+  wobbleFalloff: document.getElementById("wobbleFalloff"),
   seedProfile: document.getElementById("seedProfile"),
   size: document.getElementById("size"),
   sizeCurve: document.getElementById("sizeCurve"),
   shape: document.getElementById("shape"),
   stretch: document.getElementById("stretch"),
+  seedRadiusJitter: document.getElementById("seedRadiusJitter"),
+  seedOpacityJitter: document.getElementById("seedOpacityJitter"),
   showPetals: document.getElementById("showPetals"),
   petalType: document.getElementById("petalType"),
   petalCount: document.getElementById("petalCount"),
@@ -31,6 +39,10 @@ const controls = {
   palette: document.getElementById("palette"),
   background: document.getElementById("background"),
   contrast: document.getElementById("contrast"),
+  shadowEnabled: document.getElementById("shadowEnabled"),
+  shadowOffsetX: document.getElementById("shadowOffsetX"),
+  shadowOffsetY: document.getElementById("shadowOffsetY"),
+  shadowOpacity: document.getElementById("shadowOpacity"),
   exportSize: document.getElementById("exportSize"),
 };
 
@@ -39,9 +51,17 @@ const valueLabels = {
   angle: document.getElementById("angleVal"),
   framing: document.getElementById("framingVal"),
   radiusPower: document.getElementById("radiusPowerVal"),
+  originX: document.getElementById("originXVal"),
+  originY: document.getElementById("originYVal"),
+  compositionScale: document.getElementById("compositionScaleVal"),
+  wobbleAmount: document.getElementById("wobbleAmountVal"),
+  wobbleFrequency: document.getElementById("wobbleFrequencyVal"),
+  wobbleFalloff: document.getElementById("wobbleFalloffVal"),
   size: document.getElementById("sizeVal"),
   sizeCurve: document.getElementById("sizeCurveVal"),
   stretch: document.getElementById("stretchVal"),
+  seedRadiusJitter: document.getElementById("seedRadiusJitterVal"),
+  seedOpacityJitter: document.getElementById("seedOpacityJitterVal"),
   petalCount: document.getElementById("petalCountVal"),
   petalLength: document.getElementById("petalLengthVal"),
   petalWidth: document.getElementById("petalWidthVal"),
@@ -53,6 +73,9 @@ const valueLabels = {
   backPetalOpacity: document.getElementById("backPetalOpacityVal"),
   backPetalRotation: document.getElementById("backPetalRotationVal"),
   contrast: document.getElementById("contrastVal"),
+  shadowOffsetX: document.getElementById("shadowOffsetXVal"),
+  shadowOffsetY: document.getElementById("shadowOffsetYVal"),
+  shadowOpacity: document.getElementById("shadowOpacityVal"),
 };
 
 const presets = {
@@ -183,11 +206,19 @@ function getSettings() {
     angleDeg,
     framing: parseFloat(controls.framing.value),
     radiusPower: parseFloat(controls.radiusPower.value),
+    originX: parseFloat(controls.originX.value),
+    originY: parseFloat(controls.originY.value),
+    compositionScale: parseFloat(controls.compositionScale.value),
+    wobbleAmount: parseFloat(controls.wobbleAmount.value),
+    wobbleFrequency: parseFloat(controls.wobbleFrequency.value),
+    wobbleFalloff: parseFloat(controls.wobbleFalloff.value),
     seedProfile: controls.seedProfile.value,
     size: parseFloat(controls.size.value),
     sizeCurve: parseFloat(controls.sizeCurve.value),
     shape: controls.shape.value,
     stretch: parseFloat(controls.stretch.value),
+    seedRadiusJitter: parseFloat(controls.seedRadiusJitter.value),
+    seedOpacityJitter: parseFloat(controls.seedOpacityJitter.value),
     showPetals: controls.showPetals.checked,
     petalType: controls.petalType.value,
     petalCount: parseInt(controls.petalCount.value, 10),
@@ -204,6 +235,10 @@ function getSettings() {
     palette: controls.palette.value,
     background: controls.background.value,
     contrast: parseFloat(controls.contrast.value),
+    shadowEnabled: controls.shadowEnabled.checked,
+    shadowOffsetX: parseFloat(controls.shadowOffsetX.value),
+    shadowOffsetY: parseFloat(controls.shadowOffsetY.value),
+    shadowOpacity: parseFloat(controls.shadowOpacity.value),
     exportSize: controls.exportSize.value,
     lockGolden,
   };
@@ -229,9 +264,17 @@ function updateLabels() {
   valueLabels.angle.textContent = s.angleDeg.toFixed(1);
   valueLabels.framing.textContent = s.framing.toFixed(2);
   valueLabels.radiusPower.textContent = s.radiusPower.toFixed(2);
+  valueLabels.originX.textContent = s.originX.toFixed(2);
+  valueLabels.originY.textContent = s.originY.toFixed(2);
+  valueLabels.compositionScale.textContent = s.compositionScale.toFixed(2);
+  valueLabels.wobbleAmount.textContent = s.wobbleAmount.toFixed(1);
+  valueLabels.wobbleFrequency.textContent = s.wobbleFrequency.toFixed(2);
+  valueLabels.wobbleFalloff.textContent = s.wobbleFalloff.toFixed(2);
   valueLabels.size.textContent = s.size.toFixed(1);
   valueLabels.sizeCurve.textContent = s.sizeCurve.toFixed(2);
   valueLabels.stretch.textContent = s.stretch.toFixed(2);
+  valueLabels.seedRadiusJitter.textContent = s.seedRadiusJitter.toFixed(2);
+  valueLabels.seedOpacityJitter.textContent = s.seedOpacityJitter.toFixed(2);
   valueLabels.petalCount.textContent = s.petalCount;
   valueLabels.petalLength.textContent = s.petalLength.toFixed(0);
   valueLabels.petalWidth.textContent = s.petalWidth.toFixed(0);
@@ -243,6 +286,9 @@ function updateLabels() {
   valueLabels.backPetalOpacity.textContent = s.backPetalOpacity.toFixed(2);
   valueLabels.backPetalRotation.textContent = s.backPetalRotation.toFixed(2);
   valueLabels.contrast.textContent = s.contrast.toFixed(2);
+  valueLabels.shadowOffsetX.textContent = s.shadowOffsetX.toFixed(1);
+  valueLabels.shadowOffsetY.textContent = s.shadowOffsetY.toFixed(1);
+  valueLabels.shadowOpacity.textContent = s.shadowOpacity.toFixed(2);
   controls.angle.disabled = s.lockGolden;
   if (document.activeElement !== controls.seedProfile) {
     const inferred = inferSeedProfileFromSizeCurve(s.sizeCurve);
@@ -280,18 +326,28 @@ function resizeCanvas() {
 function computePoints(settings, width, height) {
   const points = [];
   const angle = settings.angleDeg * Math.PI / 180;
-  const cx = width / 2;
-  const cy = height / 2;
+  const cx = width * settings.originX;
+  const cy = height * settings.originY;
   const maxRadiusRaw = Math.pow(settings.points, settings.radiusPower);
-  const targetRadius = Math.min(width, height) * 0.5 * settings.framing;
+  const targetRadius = Math.min(width, height) * 0.5 * settings.framing * settings.compositionScale;
   const scale = targetRadius / maxRadiusRaw;
 
   for (let i = 1; i <= settings.points; i++) {
     const t = i / settings.points;
     const r = scale * Math.pow(i, settings.radiusPower);
     const theta = i * angle;
-    const x = cx + r * Math.cos(theta);
-    const y = cy + r * Math.sin(theta);
+    let x = cx + r * Math.cos(theta);
+    let y = cy + r * Math.sin(theta);
+
+    // Organic wobble: a tiny perpendicular sinusoidal offset layered over the clean math.
+    // This keeps the phyllotaxis structure intact while making the bloom feel less plotted.
+    if (settings.wobbleAmount > 0) {
+      const wobble = Math.sin(i * settings.wobbleFrequency + settings.angleDeg)
+        * settings.wobbleAmount
+        * Math.pow(t, settings.wobbleFalloff);
+      x += -Math.sin(theta) * wobble;
+      y +=  Math.cos(theta) * wobble;
+    }
 
     let sizeFactor = 1 + settings.sizeCurve * (t - 0.5);
     sizeFactor = clamp(sizeFactor, 0.15, 3);
@@ -299,9 +355,9 @@ function computePoints(settings, width, height) {
 
     const color = samplePalette(settings.palette, t, settings.contrast);
 
-    // Stochastic jitter — decorrelated seeds for radius and alpha
-    const jitterR = 0.85 + seededRandom(i * 17.31) * 0.30;   // ±15 % radius scatter
-    const jitterA = 0.58 + seededRandom(i * 13.73) * 0.42;   // opacity 0.58 – 1.00
+    // Stochastic jitter — controllable, decorrelated radius and alpha variation.
+    const jitterR = 1 + ((seededRandom(i * 17.31) * 2 - 1) * settings.seedRadiusJitter);
+    const jitterA = clamp(1 - seededRandom(i * 13.73) * settings.seedOpacityJitter, 0.05, 1);
 
     points.push({ x, y, theta, t, radius, color, jitterR, jitterA });
   }
@@ -318,27 +374,29 @@ function computePoints(settings, width, height) {
 function drawSeed(ctx, point, settings) {
   const r = point.radius * point.jitterR;
 
-  const shadowDx = r * 0.30 + 0.6;   // offset scales lightly with size
-  const shadowDy = r * 0.38 + 0.8;
-  const shadowAlpha = point.jitterA * 0.26;
+  if (settings.shadowEnabled && settings.shadowOpacity > 0) {
+    const shadowDx = settings.shadowOffsetX;
+    const shadowDy = settings.shadowOffsetY;
+    const shadowAlpha = point.jitterA * settings.shadowOpacity;
 
-  ctx.fillStyle = `rgba(0, 0, 0, ${shadowAlpha})`;
+    ctx.fillStyle = `rgba(0, 0, 0, ${shadowAlpha})`;
 
-  if (settings.shape === "square") {
-    const side = r * 2;
-    ctx.fillRect(point.x - side / 2 + shadowDx, point.y - side / 2 + shadowDy, side, side);
-  } else if (settings.shape === "ellipse") {
-    ctx.save();
-    ctx.translate(point.x + shadowDx, point.y + shadowDy);
-    ctx.rotate(point.theta);
-    ctx.beginPath();
-    ctx.ellipse(0, 0, r * settings.stretch, r, 0, 0, Math.PI * 2);
-    ctx.fill();
-    ctx.restore();
-  } else {
-    ctx.beginPath();
-    ctx.arc(point.x + shadowDx, point.y + shadowDy, r, 0, Math.PI * 2);
-    ctx.fill();
+    if (settings.shape === "square") {
+      const side = r * 2;
+      ctx.fillRect(point.x - side / 2 + shadowDx, point.y - side / 2 + shadowDy, side, side);
+    } else if (settings.shape === "ellipse") {
+      ctx.save();
+      ctx.translate(point.x + shadowDx, point.y + shadowDy);
+      ctx.rotate(point.theta);
+      ctx.beginPath();
+      ctx.ellipse(0, 0, r * settings.stretch, r, 0, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.restore();
+    } else {
+      ctx.beginPath();
+      ctx.arc(point.x + shadowDx, point.y + shadowDy, r, 0, Math.PI * 2);
+      ctx.fill();
+    }
   }
 
   // Main element — uses jittered radius and opacity
@@ -416,14 +474,11 @@ function getPetalDimensions(type, length, width, isBackRing = false) {
 function drawPetalRing(ctx, options) {
   const {
     cx, cy, baseRadius, count, length, width, opacity,
-    rotationOffset = 0, colors, petalType = "classic", isBackRing = false
+    rotationOffset = 0, colors, petalType = "classic", isBackRing = false,
+    shadowEnabled = true, shadowOffsetX = 2, shadowOffsetY = 2, shadowOpacity = 0.08
   } = options;
 
   const dims = getPetalDimensions(petalType, length, width, isBackRing);
-
-  // Fixed shadow offset — implies light from upper-left
-  const shadowDx = 1.5;
-  const shadowDy = 2.0;
 
   for (let i = 0; i < count; i++) {
     const theta = ((i + rotationOffset) / count) * Math.PI * 2;
@@ -431,13 +486,15 @@ function drawPetalRing(ctx, options) {
     const y = cy + baseRadius * Math.sin(theta);
 
     // ── Shadow pass ──────────────────────────────────────────────────────────
-    ctx.save();
-    ctx.translate(x + shadowDx, y + shadowDy);
-    ctx.rotate(theta + Math.PI / 2);
-    ctx.fillStyle = `rgba(0, 0, 0, ${opacity * 0.28})`;
-    drawPetalPath(ctx, petalType, dims.length, dims.width);
-    ctx.fill();
-    ctx.restore();
+    if (shadowEnabled && shadowOpacity > 0) {
+      ctx.save();
+      ctx.translate(x + shadowOffsetX, y + shadowOffsetY);
+      ctx.rotate(theta + Math.PI / 2);
+      ctx.fillStyle = `rgba(0, 0, 0, ${Math.min(opacity * shadowOpacity, 0.35)})`;
+      drawPetalPath(ctx, petalType, dims.length, dims.width);
+      ctx.fill();
+      ctx.restore();
+    }
 
     // ── Main petal draw ──────────────────────────────────────────────────────
     ctx.save();
@@ -457,9 +514,9 @@ function drawPetalRing(ctx, options) {
 }
 
 function drawPetals(ctx, settings, width, height) {
-  const cx = width / 2;
-  const cy = height / 2;
-  const targetRadius = Math.min(width, height) * 0.5 * settings.framing;
+  const cx = width * settings.originX;
+  const cy = height * settings.originY;
+  const targetRadius = Math.min(width, height) * 0.5 * settings.framing * settings.compositionScale;
 
   function darken(color, factor) {
     return [Math.round(color.r * factor), Math.round(color.g * factor), Math.round(color.b * factor)];
@@ -485,6 +542,10 @@ function drawPetals(ctx, settings, width, height) {
       colors: [backTop, backMid, backBase],
       petalType: settings.petalType,
       isBackRing: true,
+      shadowEnabled: settings.shadowEnabled,
+      shadowOffsetX: settings.shadowOffsetX,
+      shadowOffsetY: settings.shadowOffsetY,
+      shadowOpacity: settings.shadowOpacity,
     });
   }
 
@@ -504,6 +565,10 @@ function drawPetals(ctx, settings, width, height) {
       ],
       petalType: settings.petalType,
       isBackRing: false,
+      shadowEnabled: settings.shadowEnabled,
+      shadowOffsetX: settings.shadowOffsetX,
+      shadowOffsetY: settings.shadowOffsetY,
+      shadowOpacity: settings.shadowOpacity,
     });
   }
 }
@@ -578,11 +643,19 @@ function applyPreset(name) {
   controls.lockGolden.checked = preset.lockGolden;
   controls.framing.value = preset.framing;
   controls.radiusPower.value = preset.radiusPower;
+  controls.originX.value = preset.originX ?? 0.50;
+  controls.originY.value = preset.originY ?? 0.50;
+  controls.compositionScale.value = preset.compositionScale ?? 1.00;
+  controls.wobbleAmount.value = preset.wobbleAmount ?? 1.5;
+  controls.wobbleFrequency.value = preset.wobbleFrequency ?? 0.17;
+  controls.wobbleFalloff.value = preset.wobbleFalloff ?? 0.75;
   controls.seedProfile.value = preset.seedProfile || inferSeedProfileFromSizeCurve(preset.sizeCurve);
   controls.size.value = preset.size;
   controls.sizeCurve.value = preset.sizeCurve;
   controls.shape.value = preset.shape;
   controls.stretch.value = preset.stretch;
+  controls.seedRadiusJitter.value = preset.seedRadiusJitter ?? 0.12;
+  controls.seedOpacityJitter.value = preset.seedOpacityJitter ?? 0.10;
   controls.showPetals.checked = preset.showPetals;
   controls.petalType.value = preset.petalType || "classic";
   controls.petalCount.value = preset.petalCount;
@@ -599,6 +672,10 @@ function applyPreset(name) {
   controls.palette.value = preset.palette;
   controls.background.value = preset.background;
   controls.contrast.value = preset.contrast;
+  controls.shadowEnabled.checked = preset.shadowEnabled ?? true;
+  controls.shadowOffsetX.value = preset.shadowOffsetX ?? 2;
+  controls.shadowOffsetY.value = preset.shadowOffsetY ?? 2;
+  controls.shadowOpacity.value = preset.shadowOpacity ?? 0.08;
   drawPreview();
 }
 
