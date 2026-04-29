@@ -30,6 +30,9 @@ const controls = {
   petalWidth: document.getElementById("petalWidth"),
   petalOffset: document.getElementById("petalOffset"),
   petalOpacity: document.getElementById("petalOpacity"),
+  headRimEnabled: document.getElementById("headRimEnabled"),
+  headRimWidth: document.getElementById("headRimWidth"),
+  headRimOpacity: document.getElementById("headRimOpacity"),
   showBackPetals: document.getElementById("showBackPetals"),
   backPetalLength: document.getElementById("backPetalLength"),
   backPetalWidth: document.getElementById("backPetalWidth"),
@@ -67,6 +70,8 @@ const valueLabels = {
   petalWidth: document.getElementById("petalWidthVal"),
   petalOffset: document.getElementById("petalOffsetVal"),
   petalOpacity: document.getElementById("petalOpacityVal"),
+  headRimWidth: document.getElementById("headRimWidthVal"),
+  headRimOpacity: document.getElementById("headRimOpacityVal"),
   backPetalLength: document.getElementById("backPetalLengthVal"),
   backPetalWidth: document.getElementById("backPetalWidthVal"),
   backPetalOffset: document.getElementById("backPetalOffsetVal"),
@@ -83,7 +88,7 @@ const presets = {
     points: 1800, angle: GOLDEN_ANGLE, lockGolden: true, framing: 0.78, radiusPower: 0.50,
     seedProfile: "natural", size: 2.4, sizeCurve: 0.55, shape: "ellipse", stretch: 1.45,
     showPetals: true, petalType: "classic", petalCount: 34, petalLength: 90, petalWidth: 26,
-    petalOffset: 10, petalOpacity: 0.95, showBackPetals: true, backPetalLength: 120,
+    petalOffset: 2, petalOpacity: 0.95, headRimEnabled: true, headRimWidth: 24, headRimOpacity: 0.38, showBackPetals: true, backPetalLength: 120,
     backPetalWidth: 32, backPetalOffset: 24, backPetalOpacity: 0.72, backPetalRotation: 0.50,
     palette: "sunflower", background: "black", contrast: 1.00,
   },
@@ -91,7 +96,7 @@ const presets = {
     points: 4200, angle: GOLDEN_ANGLE, lockGolden: true, framing: 0.90, radiusPower: 0.50,
     seedProfile: "outerFlare", size: 2.0, sizeCurve: 1.10, shape: "circle", stretch: 1.4,
     showPetals: false, petalType: "classic", petalCount: 34, petalLength: 90, petalWidth: 26,
-    petalOffset: 10, petalOpacity: 0.95, showBackPetals: false, backPetalLength: 120,
+    petalOffset: 10, petalOpacity: 0.95, headRimEnabled: false, headRimWidth: 22, headRimOpacity: 0.32, showBackPetals: false, backPetalLength: 120,
     backPetalWidth: 32, backPetalOffset: 24, backPetalOpacity: 0.72, backPetalRotation: 0.50,
     palette: "amber", background: "black", contrast: 1.15,
   },
@@ -99,7 +104,7 @@ const presets = {
     points: 700, angle: GOLDEN_ANGLE, lockGolden: true, framing: 0.78, radiusPower: 0.50,
     seedProfile: "even", size: 4.6, sizeCurve: 0.35, shape: "circle", stretch: 1.4,
     showPetals: false, petalType: "classic", petalCount: 34, petalLength: 90, petalWidth: 26,
-    petalOffset: 10, petalOpacity: 0.95, showBackPetals: false, backPetalLength: 120,
+    petalOffset: 10, petalOpacity: 0.95, headRimEnabled: false, headRimWidth: 22, headRimOpacity: 0.32, showBackPetals: false, backPetalLength: 120,
     backPetalWidth: 32, backPetalOffset: 24, backPetalOpacity: 0.72, backPetalRotation: 0.50,
     palette: "bone", background: "paper", contrast: 0.90,
   },
@@ -107,7 +112,7 @@ const presets = {
     points: 1600, angle: GOLDEN_ANGLE, lockGolden: true, framing: 0.82, radiusPower: 0.50,
     seedProfile: "even", size: 2.2, sizeCurve: 0.0, shape: "circle", stretch: 1.0,
     showPetals: false, petalType: "classic", petalCount: 34, petalLength: 90, petalWidth: 26,
-    petalOffset: 10, petalOpacity: 0.95, showBackPetals: false, backPetalLength: 120,
+    petalOffset: 10, petalOpacity: 0.95, headRimEnabled: false, headRimWidth: 22, headRimOpacity: 0.32, showBackPetals: false, backPetalLength: 120,
     backPetalWidth: 32, backPetalOffset: 24, backPetalOpacity: 0.72, backPetalRotation: 0.50,
     palette: "charcoal", background: "paper", contrast: 1.00,
   },
@@ -115,7 +120,7 @@ const presets = {
     points: 2000, angle: GOLDEN_ANGLE, lockGolden: true, framing: 0.84, radiusPower: 0.50,
     seedProfile: "outerFlare", size: 2.7, sizeCurve: 0.75, shape: "ellipse", stretch: 1.55,
     showPetals: true, petalType: "rounded", petalCount: 34, petalLength: 100, petalWidth: 28,
-    petalOffset: 12, petalOpacity: 0.95, showBackPetals: true, backPetalLength: 130,
+    petalOffset: 4, petalOpacity: 0.95, headRimEnabled: true, headRimWidth: 26, headRimOpacity: 0.36, showBackPetals: true, backPetalLength: 130,
     backPetalWidth: 34, backPetalOffset: 28, backPetalOpacity: 0.70, backPetalRotation: 0.50,
     palette: "amber", background: "black", contrast: 1.20,
   },
@@ -123,7 +128,7 @@ const presets = {
     points: 1800, angle: GOLDEN_ANGLE, lockGolden: true, framing: 0.84, radiusPower: 0.50,
     seedProfile: "natural", size: 2.3, sizeCurve: 0.55, shape: "circle", stretch: 1.0,
     showPetals: false, petalType: "classic", petalCount: 34, petalLength: 90, petalWidth: 26,
-    petalOffset: 10, petalOpacity: 0.95, showBackPetals: false, backPetalLength: 120,
+    petalOffset: 10, petalOpacity: 0.95, headRimEnabled: false, headRimWidth: 22, headRimOpacity: 0.32, showBackPetals: false, backPetalLength: 120,
     backPetalWidth: 32, backPetalOffset: 24, backPetalOpacity: 0.72, backPetalRotation: 0.50,
     palette: "mono", background: "black", contrast: 1.00,
   }
@@ -226,6 +231,9 @@ function getSettings() {
     petalWidth: parseFloat(controls.petalWidth.value),
     petalOffset: parseFloat(controls.petalOffset.value),
     petalOpacity: parseFloat(controls.petalOpacity.value),
+    headRimEnabled: controls.headRimEnabled.checked,
+    headRimWidth: parseFloat(controls.headRimWidth.value),
+    headRimOpacity: parseFloat(controls.headRimOpacity.value),
     showBackPetals: controls.showBackPetals.checked,
     backPetalLength: parseFloat(controls.backPetalLength.value),
     backPetalWidth: parseFloat(controls.backPetalWidth.value),
@@ -280,6 +288,8 @@ function updateLabels() {
   valueLabels.petalWidth.textContent = s.petalWidth.toFixed(0);
   valueLabels.petalOffset.textContent = s.petalOffset.toFixed(0);
   valueLabels.petalOpacity.textContent = s.petalOpacity.toFixed(2);
+  valueLabels.headRimWidth.textContent = s.headRimWidth.toFixed(0);
+  valueLabels.headRimOpacity.textContent = s.headRimOpacity.toFixed(2);
   valueLabels.backPetalLength.textContent = s.backPetalLength.toFixed(0);
   valueLabels.backPetalWidth.textContent = s.backPetalWidth.toFixed(0);
   valueLabels.backPetalOffset.textContent = s.backPetalOffset.toFixed(0);
@@ -573,6 +583,40 @@ function drawPetals(ctx, settings, width, height) {
   }
 }
 
+
+// ─── Receptacle / head rim ────────────────────────────────────────────────────
+// Visual integration layer between the seed head and the petal bases.
+// Petals remain underneath the disc, but this soft rim hides the mechanical join
+// and makes them feel tucked into a physical sunflower head.
+function drawHeadRim(ctx, settings, width, height) {
+  if (!settings.headRimEnabled || settings.headRimOpacity <= 0 || settings.headRimWidth <= 0) return;
+
+  const cx = width * settings.originX;
+  const cy = height * settings.originY;
+  const targetRadius = Math.min(width, height) * 0.5 * settings.framing * settings.compositionScale;
+  const rimWidth = settings.headRimWidth;
+
+  const innerRadius = Math.max(0, targetRadius - rimWidth * 0.9);
+  const outerRadius = targetRadius + rimWidth * 0.75;
+
+  const dark = samplePalette(settings.palette, 0.08, settings.contrast);
+  const warm = samplePalette(settings.palette, 0.26, settings.contrast);
+
+  const grad = ctx.createRadialGradient(cx, cy, innerRadius, cx, cy, outerRadius);
+  grad.addColorStop(0.00, rgbString(dark, 0));
+  grad.addColorStop(0.46, rgbString(dark, settings.headRimOpacity * 0.45));
+  grad.addColorStop(0.68, rgbString(dark, settings.headRimOpacity));
+  grad.addColorStop(0.86, rgbString(warm, settings.headRimOpacity * 0.38));
+  grad.addColorStop(1.00, rgbString(dark, 0));
+
+  ctx.save();
+  ctx.fillStyle = grad;
+  ctx.beginPath();
+  ctx.arc(cx, cy, outerRadius, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.restore();
+}
+
 // ─── Render ───────────────────────────────────────────────────────────────────
 
 function renderToContext(ctx, width, height, settings) {
@@ -583,6 +627,7 @@ function renderToContext(ctx, width, height, settings) {
     ctx.fillRect(0, 0, width, height);
   }
   drawPetals(ctx, settings, width, height);
+  drawHeadRim(ctx, settings, width, height);
   const { points } = computePoints(settings, width, height);
   for (const point of points) drawSeed(ctx, point, settings);
 }
@@ -675,6 +720,9 @@ function applyPreset(name) {
   controls.petalWidth.value = preset.petalWidth;
   controls.petalOffset.value = preset.petalOffset;
   controls.petalOpacity.value = preset.petalOpacity;
+  controls.headRimEnabled.checked = preset.headRimEnabled ?? preset.showPetals;
+  controls.headRimWidth.value = preset.headRimWidth ?? 24;
+  controls.headRimOpacity.value = preset.headRimOpacity ?? 0.38;
   controls.showBackPetals.checked = preset.showBackPetals;
   controls.backPetalLength.value = preset.backPetalLength;
   controls.backPetalWidth.value = preset.backPetalWidth;
